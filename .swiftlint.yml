@@ -1,0 +1,23 @@
+included:
+  - Sprayd
+  - SpraydUITests
+  - SpraydTests
+
+excluded:
+  - Pods
+  - Carthage
+  - DerivedData
+
+line_length:
+  warning: 120
+  error: 160
+
+type_name:
+  min_length: 3
+
+identifier_name:
+  min_length: 2
+
+opt_in_rules:
+  - empty_count
+  - explicit_init
