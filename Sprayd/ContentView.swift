@@ -16,16 +16,15 @@ struct ContentView: View {
         TabView {
             
             Tab("Map", systemImage: "map") {
-                Color.green.ignoresSafeArea()
+                MapView()
             }
             
             Tab("Featured", systemImage: "star") {
-                EmptyView()
+                FeaturedView()
             }
             
-            
             Tab("Account", systemImage: "person.crop.circle.fill") {
-                    EmptyView()
+                ProfileView()
             }
             
         }
