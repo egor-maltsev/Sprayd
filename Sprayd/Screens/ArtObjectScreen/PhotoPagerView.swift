@@ -13,27 +13,24 @@ struct PhotoPagerView: View {
     private let dateLabelText = "02.03.2024"
 
     var body: some View {
-        let side = UIScreen.main.bounds.width - 40
-
         TabView {
             ForEach(images, id: \.self) { imageName in
-                ZStack(alignment: .topLeading) {
-                    Image(imageName)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: side, height: side)
-                        .clipped()
-
-                    dateLabel
-                }
-                .frame(width: side, height: side)
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                Image(imageName)
+                    .resizable()
+                    .scaledToFill()
+                    // Стабильная квадратность: высота автоматически соответствует ширине.
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                    .overlay(alignment: .topLeading) {
+                        dateLabel
+                    }
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .automatic))
-        .frame(height: side)
     }
-    
+
     private var dateLabel: some View {
         Text(dateLabelText)
             .foregroundColor(.white)
