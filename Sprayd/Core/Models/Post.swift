@@ -6,5 +6,7 @@
 //
 
 // TODO: - Finish model description
-struct Post {
+struct Post: Identifiable {
+    var id: ObjectIdentifier // Stub, remove later
+    
 }
