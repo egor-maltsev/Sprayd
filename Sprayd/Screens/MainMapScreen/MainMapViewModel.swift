@@ -7,25 +7,22 @@
 
 import Foundation
 import MapKit
-import _MapKit_SwiftUI
 
 @Observable
 final class MainMapViewModel {
-    var position: MapCameraPosition
+    var region: MKCoordinateRegion
     var markers: [MapMarker]
 
     init(
-        position: MapCameraPosition = .region(
-            MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 55.7558, longitude: 37.6176),
-                span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-            )
+        region: MKCoordinateRegion = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 55.7558, longitude: 37.6176),
+            span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
         ),
         markers: [MapMarker] = [
             MapMarker(title: "Москва", latitude: 55.7558, longitude: 37.6176)
         ]
     ) {
-        self.position = position
+        self.region = region
         self.markers = markers
     }
 }
