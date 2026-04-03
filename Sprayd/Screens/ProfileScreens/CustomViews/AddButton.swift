@@ -25,8 +25,6 @@ struct AddButton: View {
         static let foregroundColor: Color = .white
     }
     
-    // MARK: - Fields
-    
     // MARK: - Body
     var body: some View {
         Button {

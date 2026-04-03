@@ -17,14 +17,6 @@ struct UserProfileView: View {
         // UI constraint properties
         static let profileImageSize: CGFloat = 160
         static let profileImageCornerRadius: CGFloat = profileImageSize / 2
-        static let usernameDescriptionSpacing: CGFloat = 13
-        
-        // Fonts
-        static let usernameFont: Font = .custom("Climate Crisis", size: 22)
-        static let descriptionFont: Font = .custom("InstrumentSans-Medium", size: 13)
-        static let optionsFont: Font = .custom("InstrumentSans-Medium", size: 16)
-        static let sectionTitleFont: Font = .custom("Climate Crisis", size: 20)
-        static let buttonBottomTextFont: Font = .custom("InstrumentSans-Medium", size: 13)
     }
     
     // MARK: - Fields
@@ -39,16 +31,16 @@ struct UserProfileView: View {
                 .frame(width: Const.profileImageSize, height: Const.profileImageSize)
                 .cornerRadius(Const.profileImageCornerRadius)
                 .frame(maxWidth: .infinity)
-            VStack(spacing: Const.usernameDescriptionSpacing) {
+            VStack(spacing: Metrics.oneAndHalfModule) {
                 HStack {
                     Text("Username")
-                        .font(Const.usernameFont)
+                        .font(.ClimateCrisisRegular22)
                 }
                 .frame(maxWidth: .infinity)
                 
                 HStack {
                     Text("Description")
-                        .font(Const.descriptionFont)
+                        .font(.InstrumentMedium13)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -67,7 +59,7 @@ struct UserProfileView: View {
     private var sectionTitle: some View {
         Text(Const.postedSectionText)
             .frame(maxWidth: 150)
-            .font(Const.sectionTitleFont)
+            .font(.ClimateCrisisRegular20)
     }
     
     // TODO: - Replace with an array of posts
@@ -82,11 +74,8 @@ struct UserProfileView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     bioView
-                    
                     pickerView
-                    
                     sectionTitle
-                                        
                     postView
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

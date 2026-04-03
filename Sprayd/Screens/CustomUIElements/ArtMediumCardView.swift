@@ -11,33 +11,9 @@ struct ArtMediumCardView: View {
     // MARK: - Constants
     private enum Const {
         // UI constraint properties
-        static let cardHorizontalPadding: CGFloat = 24
-        static let cardTopPadding: CGFloat = 22
-        
         static let imageHeight: CGFloat = 318
         static let imageCornerRadius: CGFloat = 30
-        
-        static let contentSpacing: CGFloat = 18
-        static let sectionSpacing: CGFloat = 10
-        static let peopleBlockSpacing: CGFloat = 14
-        
-        static let titleToMetaSpacing: CGFloat = 6
-        static let descriptionTopSpacing: CGFloat = 8
-        
-        static let heartIconSize: CGFloat = 18
-        static let locationIconSize: CGFloat = 18
-        
-        // Fonts
-        static let titleFont: Font = .custom("InstrumentSans-Bold", size: 20)
-        static let likesFont: Font = .custom("InstrumentSans-Medium", size: 13)
-        static let metaFont: Font = .custom("InstrumentSans-Regular", size: 13)
-        static let descriptionFont: Font = .custom("InstrumentSans-Regular", size: 13)
-        
-        static let artworkAuthorSectionTitleFont: Font = .custom("InstrumentSans-Bold", size: 13)
-        static let postAuthorSectionTitleFont: Font = .custom("InstrumentSans-Regular", size: 13)
-        
-        // Colors
-        static let heartColor = Color.accentRed
+        static let iconSize: CGFloat = 18
         
         static let placeholderColor = Color(
             red: 224 / 255,
@@ -87,14 +63,14 @@ struct ArtMediumCardView: View {
     private var titleRow: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(Const.titleText)
-                .font(Const.titleFont)
+                .font(.InstrumentBold20)
                 .foregroundStyle(.black)
             
-            Spacer(minLength: 12)
+            Spacer(minLength: Metrics.oneAndHalfModule)
             
-            HStack(spacing: 8) {
+            HStack(spacing: Metrics.module) {
                 Text(String(likesCount))
-                    .font(Const.likesFont)
+                    .font(.InstrumentMedium13)
                     .foregroundStyle(.black)
                 
                 
@@ -102,8 +78,8 @@ struct ArtMediumCardView: View {
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: Const.heartIconSize, height: Const.heartIconSize)
-                    .foregroundStyle(Const.heartColor)
+                    .frame(width: Const.iconSize, height: Const.iconSize)
+                    .foregroundStyle(Color.accentRed)
                     .onTapGesture {
                         toggleLike()
                     }
@@ -116,35 +92,35 @@ struct ArtMediumCardView: View {
         HStack(alignment: .center) {
             Label {
                 Text(Const.locationText)
-                    .font(Const.metaFont)
+                    .font(.InstrumentRegular13)
             } icon: {
                 Image(Const.locationIcon)
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: Const.locationIconSize, height: Const.locationIconSize)
+                    .frame(width: Const.iconSize, height: Const.iconSize)
             }
             .foregroundStyle(Color.secondaryColor)
             
-            Spacer(minLength: 12)
+            Spacer(minLength: Metrics.oneAndHalfModule)
             
             Text(Const.dateText)
-                .font(Const.metaFont)
+                .font(.InstrumentRegular13)
                 .foregroundStyle(Color.secondaryColor)
         }
     }
     
     private var descriptionText: some View {
         Text(Const.descriptionText)
-            .font(Const.descriptionFont)
+            .font(.InstrumentRegular13)
             .foregroundStyle(Color.secondaryColor)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.top, Const.descriptionTopSpacing)
+            .padding(.top, Metrics.module)
     }
     
     private func personSection(title: String, titleFont: Font, name: String) -> some View {
-        VStack(alignment: .leading, spacing: Const.sectionSpacing) {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text(title)
                 .font(titleFont)
                 .foregroundStyle(Color.accentRed)
@@ -156,33 +132,33 @@ struct ArtMediumCardView: View {
     // MARK: - Body
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: Const.contentSpacing) {
+            VStack(alignment: .leading, spacing: Metrics.doubleModule) {
                 artworkImage
                 
-                VStack(alignment: .leading, spacing: Const.titleToMetaSpacing) {
+                VStack(alignment: .leading, spacing: Metrics.threeQuartersModule) {
                     titleRow
                     metaRow
                 }
                 
                 descriptionText
                 
-                VStack(alignment: .leading, spacing: Const.peopleBlockSpacing) {
+                VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                     personSection(
                         title: Const.artworkAuthorSectionTitle,
-                        titleFont: Const.artworkAuthorSectionTitleFont,
+                        titleFont: .InstrumentBold13,
                         name: Const.artworkAuthorName
                     )
                     
                     personSection(
                         title: Const.postAuthorSectionTitle,
-                        titleFont: Const.postAuthorSectionTitleFont,
+                        titleFont: .InstrumentRegular13,
                         name: Const.postAuthorName
                     )
                 }
             }
-            .padding(.horizontal, Const.cardHorizontalPadding)
-            .padding(.top, Const.cardTopPadding)
-            .padding(.bottom, Const.cardTopPadding)
+            .padding(.horizontal, Metrics.tripleModule)
+            .padding(.top, Metrics.tripleModule)
+            .padding(.bottom, Metrics.tripleModule)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
