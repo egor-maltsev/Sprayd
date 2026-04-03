@@ -82,7 +82,14 @@ struct ArtAdditionView: View {
     
     // MARK: - Lifecycle
     init(
-        addedPhotos: [Photo] = [], title: String = "", description: String = "", address: String = "", selectedAuthor: Author? = nil, selectedCategory: Category? = nil, onBackButtonTapped: @escaping () -> Void) {
+        addedPhotos: [Photo] = [],
+        title: String = "",
+        description: String = "",
+        address: String = "",
+        selectedAuthor: Author? = nil,
+        selectedCategory: Category? = nil,
+        onBackButtonTapped: @escaping () -> Void
+    ) {
             self.addedPhotos = addedPhotos
             self.title = title
             self.description = description
@@ -281,14 +288,7 @@ struct ArtAdditionView: View {
     }
 }
 
-<<<<<<< HEAD
 //// MARK: - Preview
 //#Preview {
 //    ArtAdditionView()
 //}
-=======
-// MARK: - Preview
-#Preview {
-    ArtAdditionView()
-}
->>>>>>> 6ecaa70d287d650b79a099c33b4bf0280e342fcf
