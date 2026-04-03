@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct ArtObjectView: View {
-    @State private var isVisited = false
+    @State private var viewModel = ArtObjectViewModel.sample
 
     var body: some View {
+        @Bindable var viewModel = viewModel
+
         NavigationStack {
             ZStack {
                 Color.appBackground
                     .ignoresSafeArea(edges: .all)
                 ScrollView {
                     Spacer(minLength: 20)
-                    ArtCardView()
+                    ArtCardView(viewModel: self.viewModel)
+
                     VStack(spacing: 12) {
                         markVisitedButton
                         contributeButton
@@ -26,37 +29,43 @@ struct ArtObjectView: View {
                     .padding(.top, 16)
                 }
             }
+            .navigationDestination(isPresented: $viewModel.isPhotoPreviewPresented) {
+                PhotoView(
+                    selectedPhotoIndex: $viewModel.selectedPhotoIndex,
+                    photoImageNames: self.viewModel.photoImageNames
+                )
+            }
         }
     }
 
     private var markVisitedButton: some View {
         Button {
-            isVisited.toggle()
+            viewModel.toggleVisited()
         } label: {
             HStack {
-                Text(isVisited ? "Marked visited" : "Mark visited")
+                Text(viewModel.isVisited ? "Marked visited" : "Mark visited")
                     .font(Font.InstrumentMedium16)
                 Spacer()
                 Image(systemName: "checkmark")
                     .fontWeight(.medium)
             }
-            .foregroundStyle(isVisited ? .white : .primary)
+            .foregroundStyle(viewModel.isVisited ? .white : .primary)
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
             .background(
-                isVisited
+                viewModel.isVisited
                     ? AnyShapeStyle(Color.accentRed)
                     : AnyShapeStyle(Color.clear)
             )
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.primary, lineWidth: isVisited ? 0 : 1.5)
+                    .stroke(Color.primary, lineWidth: viewModel.isVisited ? 0 : 1.5)
             )
         }
         .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.2), value: isVisited)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.isVisited)
     }
 
     private var contributeButton: some View {

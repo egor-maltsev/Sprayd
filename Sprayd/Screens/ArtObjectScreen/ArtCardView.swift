@@ -14,62 +14,45 @@ struct ArtCardView: View {
         static let cardTopPadding: CGFloat = 5
 
         static let imageCornerRadius: CGFloat = 30
-        static let photoImageNames = ["art", "bird", "cube"]
-        
+
         static let contentSpacing: CGFloat = 18
         static let sectionSpacing: CGFloat = 10
         static let peopleBlockSpacing: CGFloat = 14
-        
+
         static let titleToMetaSpacing: CGFloat = 6
         static let descriptionTopSpacing: CGFloat = 8
-        
+
         static let heartIconSize: CGFloat = 18
         static let locationIconSize: CGFloat = 18
-        
-        static let placeholderColor = Color(
-            red: 224 / 255,
-            green: 224 / 255,
-            blue: 224 / 255
-        )
-        
-        // Text
-        static let titleText = "The Gliders"
-        static let locationText = "St. Petersburg"
-        static let dateText = "24.02.2025"
-        static let descriptionText = "Mural by Ana Markov originally painted in 2015. It explores themes of loneliness and social issues. ..."
-        static let artworkAuthorSectionTitle = "Author"
-        static let artworkAuthorName = "Ana Markov"
-        static let postAuthorSectionTitle = "Posted by"
-        static let postAuthorName = "Loxxych"
-        
-        // Symbols
-        static let placeholderImageName = "photo"
-        
-        // Icons
-        static let heartIcon: String = "heartIcon"
-        static let filledHeartIcon: String = "filledHeartIcon"
-        static let locationIcon: String = "locationIcon"
+
+        static let heartIcon = "heartIcon"
+        static let filledHeartIcon = "filledHeartIcon"
+        static let locationIcon = "locationIcon"
     }
-    
+
     // MARK: - Fields
-    @State private var isLiked: Bool = false
-    @State private var likesCount: Int = 0
-    @State private var selectedPhotoIndex: Int = 0
+    var viewModel: ArtObjectViewModel
+
     private var currentHeartIcon: String {
-        isLiked ? Const.filledHeartIcon : Const.heartIcon
+        viewModel.isLiked ? Const.filledHeartIcon : Const.heartIcon
     }
-    
+
     // MARK: - Subviews
     private var photoPager: some View {
-        GeometryReader { geo in
+        @Bindable var vm = viewModel
+        return GeometryReader { geo in
             let side = geo.size.width
-            TabView(selection: $selectedPhotoIndex) {
-                ForEach(Const.photoImageNames.indices, id: \.self) { index in
-                    Image(Const.photoImageNames[index])
+            TabView(selection: $vm.selectedPhotoIndex) {
+                SwiftUI.ForEach(viewModel.photoImageNames.indices, id: \.self) { index in
+                    Image(viewModel.photoImageNames[index])
                         .resizable()
                         .scaledToFill()
                         .frame(width: side, height: side)
                         .clipped()
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            viewModel.openPhotoPreview(at: index)
+                        }
                         .tag(index)
                 }
             }
@@ -79,21 +62,20 @@ struct ArtCardView: View {
         .aspectRatio(1, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: Const.imageCornerRadius))
     }
-    
+
     private var titleRow: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text(Const.titleText)
+            Text(viewModel.name)
                 .font(Font.InstrumentBold20)
                 .foregroundStyle(.black)
-            
+
             Spacer(minLength: 12)
-            
+
             HStack(spacing: 8) {
-                Text(String(likesCount))
+                Text(String(viewModel.likesCount))
                     .font(Font.InstrumentMedium13)
                     .foregroundStyle(.black)
-                
-                
+
                 Image(currentHeartIcon)
                     .renderingMode(.template)
                     .resizable()
@@ -101,17 +83,16 @@ struct ArtCardView: View {
                     .frame(width: Const.heartIconSize, height: Const.heartIconSize)
                     .foregroundStyle(Color.accentRed)
                     .onTapGesture {
-                        toggleLike()
+                        viewModel.toggleLike()
                     }
-                
             }
         }
     }
-    
+
     private var metaRow: some View {
         HStack(alignment: .center) {
             Label {
-                Text(Const.locationText)
+                Text(viewModel.location)
                     .font(Font.InstrumentRegular13)
             } icon: {
                 Image(Const.locationIcon)
@@ -121,80 +102,67 @@ struct ArtCardView: View {
                     .frame(width: Const.locationIconSize, height: Const.locationIconSize)
             }
             .foregroundStyle(Color.secondaryColor)
-            
+
             Spacer(minLength: 12)
-            
-            Text(Const.dateText)
+
+            Text(viewModel.dateText)
                 .font(Font.InstrumentRegular13)
                 .foregroundStyle(Color.secondaryColor)
         }
     }
-    
+
     private var descriptionText: some View {
-        Text(Const.descriptionText)
+        Text(viewModel.itemDescription)
             .font(Font.InstrumentBold13)
             .foregroundStyle(Color.secondaryColor)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.top, Const.descriptionTopSpacing)
     }
-    
+
     private func personSection(title: String, titleFont: Font, name: String) -> some View {
         VStack(alignment: .leading, spacing: Const.sectionSpacing) {
             Text(title)
                 .font(titleFont)
                 .foregroundStyle(Color.accentRed)
-            
+
             MiniProfileView(name: name)
         }
     }
-    
+
     // MARK: - Body
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: Const.contentSpacing) {
-                photoPager
-                
-                VStack(alignment: .leading, spacing: Const.titleToMetaSpacing) {
-                    titleRow
-                    metaRow
-                }
-                
-                descriptionText
-                
-                VStack(alignment: .leading, spacing: Const.peopleBlockSpacing) {
-                    personSection(
-                        title: Const.artworkAuthorSectionTitle,
-                        titleFont: Font.InstrumentBold13,
-                        name: Const.artworkAuthorName
-                    )
-                    
-                    personSection(
-                        title: Const.postAuthorSectionTitle,
-                        titleFont: Font.InstrumentBold13,
-                        name: Const.postAuthorName
-                    )
-                }
+        VStack(alignment: .leading, spacing: Const.contentSpacing) {
+            photoPager
+
+            VStack(alignment: .leading, spacing: Const.titleToMetaSpacing) {
+                titleRow
+                metaRow
             }
-            .padding(.horizontal, Const.cardHorizontalPadding)
-            .padding(.top, Const.cardTopPadding)
-            .padding(.bottom, Const.cardTopPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
+
+            descriptionText
+
+            VStack(alignment: .leading, spacing: Const.peopleBlockSpacing) {
+                personSection(
+                    title: "Author",
+                    titleFont: Font.InstrumentBold13,
+                    name: viewModel.author
+                )
+
+                personSection(
+                    title: "Posted by",
+                    titleFont: Font.InstrumentBold13,
+                    name: viewModel.postedBy
+                )
+            }
         }
-    }
-    
-    // MARK: - Display logic
-    private func toggleLike() {
-        isLiked.toggle()
-        
-        if (isLiked) {
-            likesCount += 1
-        } else {
-            likesCount -= 1
-        }
+        .padding(.horizontal, Const.cardHorizontalPadding)
+        .padding(.top, Const.cardTopPadding)
+        .padding(.bottom, Const.cardTopPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 #Preview {
-    ArtCardView()
+    ArtCardView(viewModel: .sample)
 }
