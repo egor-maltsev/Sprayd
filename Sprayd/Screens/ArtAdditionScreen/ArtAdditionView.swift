@@ -90,7 +90,7 @@ struct ArtAdditionView: View {
         self.selectedCategory = selectedCategory
         self.onBackButtonTapped = onBackButtonTapped
     }
-    
+
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -280,7 +280,14 @@ struct ArtAdditionView: View {
     }
 }
 
+<<<<<<< HEAD
 //// MARK: - Preview
 //#Preview {
 //    ArtAdditionView()
 //}
+=======
+// MARK: - Preview
+#Preview {
+    ArtAdditionView()
+}
+>>>>>>> 6ecaa70d287d650b79a099c33b4bf0280e342fcf
