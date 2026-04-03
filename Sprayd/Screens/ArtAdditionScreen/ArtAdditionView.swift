@@ -26,7 +26,7 @@ struct ArtAdditionView: View {
         
         static let narrowInputFieldHeight: CGFloat = 44
         static let wideInputFieldHeight: CGFloat = 120
-
+        
         static let mainSpacing: CGFloat = 23
         
         // Strings
@@ -50,7 +50,7 @@ struct ArtAdditionView: View {
         static let addressFieldPlaceholder: String = "Add an address*"
         
         static let addPictureText: String = "Add a picture*"
-
+        
         // Fonts
         static let iconFont: Font = .system(size: 16, weight: .medium)
         static let sectionTitleFont: Font = .InstrumentMedium16
@@ -81,16 +81,17 @@ struct ArtAdditionView: View {
     let onBackButtonTapped: () -> ()
     
     // MARK: - Lifecycle
-    init(addedPhotos: [Photo] = [], title: String = "", description: String = "", address: String = "", selectedAuthor: Author? = nil, selectedCategory: Category? = nil, onBackButtonTapped: @escaping () -> Void) {
-        self.addedPhotos = addedPhotos
-        self.title = title
-        self.description = description
-        self.address = address
-        self.selectedAuthor = selectedAuthor
-        self.selectedCategory = selectedCategory
-        self.onBackButtonTapped = onBackButtonTapped
-    }
-
+    init(
+        addedPhotos: [Photo] = [], title: String = "", description: String = "", address: String = "", selectedAuthor: Author? = nil, selectedCategory: Category? = nil, onBackButtonTapped: @escaping () -> Void) {
+            self.addedPhotos = addedPhotos
+            self.title = title
+            self.description = description
+            self.address = address
+            self.selectedAuthor = selectedAuthor
+            self.selectedCategory = selectedCategory
+            self.onBackButtonTapped = onBackButtonTapped
+        }
+    
     // MARK: - Body
     var body: some View {
         ZStack {
