@@ -37,27 +37,22 @@ struct ArtCardView: View {
         viewModel.isLiked ? Const.filledHeartIcon : Const.heartIcon
     }
 
-    private func photoPage(_ photo: ArtObjectViewModel.PhotoItem, side: CGFloat) -> some View {
-        Image(photo.imageName)
-            .resizable()
-            .scaledToFill()
-            .frame(width: side, height: side)
-            .clipped()
-            .contentShape(Rectangle())
-            .onTapGesture {
-                viewModel.openPhotoPreview(at: photo.index)
-            }
-            .tag(photo.index)
-    }
-
     // MARK: - Subviews
-    private var photoPager: some View {
-        @Bindable var vm = viewModel
-        return GeometryReader { geo in
+    private func photoPager(selection: Binding<Int>) -> some View {
+        GeometryReader { geo in
             let side = geo.size.width
-            TabView(selection: $vm.selectedPhotoIndex) {
-                ForEach(viewModel.photoItems, id: \.index) { photo in
-                    photoPage(photo, side: side)
+            TabView(selection: selection) {
+                SwiftUI.ForEach(viewModel.photoImageNames.indices, id: \.self) { index in
+                    Image(viewModel.photoImageNames[index])
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: side, height: side)
+                        .clipped()
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            viewModel.openPhotoPreview(at: index)
+                        }
+                        .tag(index)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
@@ -136,8 +131,9 @@ struct ArtCardView: View {
 
     // MARK: - Body
     var body: some View {
+        @Bindable var vm = viewModel
         VStack(alignment: .leading, spacing: Const.contentSpacing) {
-            photoPager
+            photoPager(selection: $vm.selectedPhotoIndex)
 
             VStack(alignment: .leading, spacing: Const.titleToMetaSpacing) {
                 titleRow
