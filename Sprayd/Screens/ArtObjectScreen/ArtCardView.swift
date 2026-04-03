@@ -56,7 +56,7 @@ struct ArtCardView: View {
         return GeometryReader { geo in
             let side = geo.size.width
             TabView(selection: $vm.selectedPhotoIndex) {
-                SwiftUI.ForEach(viewModel.photoItems) { photo in
+                ForEach(viewModel.photoItems, id: \.index) { photo in
                     photoPage(photo, side: side)
                 }
             }

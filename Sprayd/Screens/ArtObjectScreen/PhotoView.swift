@@ -40,7 +40,7 @@ struct PhotoView: View {
                     Spacer(minLength: 0)
 
                     TabView(selection: $selectedPhotoIndex) {
-                        SwiftUI.ForEach(photoItems) { photo in
+                        ForEach(photoItems, id: \.index) { photo in
                             photoPage(photo, width: safeWidth, height: tabHeight)
                         }
                     }
