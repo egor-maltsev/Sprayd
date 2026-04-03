@@ -21,6 +21,8 @@ struct OutlinedInputField: View {
         static let titleXOffset: CGFloat = 10
         static let titleYOffset: CGFloat = -16
         
+        static let multilineHeight: CGFloat = 120
+        
         // Strings
         
         // Fonts
@@ -34,17 +36,22 @@ struct OutlinedInputField: View {
     }
     
     // MARK: - Fields
-    let axis: Axis = .horizontal
+    let minHeight: CGFloat
+
+    let axis: Axis
     let title: String
     let placeholder: String
     @Binding var text: String
-    
+        
     // MARK: - Body
     var body: some View {
         ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: Const.cornerRadius)
                 .stroke(Const.borderColor, lineWidth: Const.borderWidth)
-                .frame(minWidth: Const.textFieldWidth, minHeight: Const.textFieldHeight)
+                .frame(
+                    minWidth: Const.textFieldWidth,
+                    minHeight: axis == .horizontal ? minHeight : Const.multilineHeight
+                )
             
             Text(title)
                 .font(Const.titleFont)
@@ -57,7 +64,7 @@ struct OutlinedInputField: View {
                 TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.placeholderGrey)).font(Const.placeholderFont)
                     .padding(.horizontal, 18)
                     .padding(.vertical, 14)
-                    .frame(minHeight: Const.textFieldHeight)
+                    .frame(minHeight: minHeight)
             } else {
                 MultilineTextField(
                     text: $text,
@@ -66,7 +73,7 @@ struct OutlinedInputField: View {
                 .padding(.horizontal, 14)
                 .padding(.top, 16)
                 .padding(.bottom, 12)
-                .frame(minHeight: Const.textFieldHeight)
+                .frame(minHeight: minHeight)
             }
         }
         .padding(.top, 10)
