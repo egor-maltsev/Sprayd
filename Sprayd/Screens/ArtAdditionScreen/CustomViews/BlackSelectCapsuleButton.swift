@@ -12,20 +12,20 @@ struct BlackSelectCapsuleButton: View {
     private enum Const {
         // UI Constraint properties
         static let spacing: CGFloat = 10
-        static let horizontalPadding: CGFloat = 16
-        static let height: CGFloat = 38
+        static let horizontalPadding: CGFloat = 10
+        static let height: CGFloat = 30
 
         // Strings
         
         // Fonts
-        static let textFont: Font = .InstrumentMedium16
+        static let textFont: Font = .InstrumentMedium13
         
         // Icons
         // Colors
     }
     let title: String
     let iconName: String?
-    let action: (() -> Void) = {}
+    let action: (() -> Void)
     
     var body: some View {
         Button(action: action) {
@@ -48,6 +48,6 @@ struct BlackSelectCapsuleButton: View {
     }
 }
 
-#Preview {
-    BlackSelectCapsuleButton(title: "Title", iconName: "rightArrowIcon")
-}
+//#Preview {
+//    BlackSelectCapsuleButton(title: "Title", iconName: "rightArrowIcon")
+//}
