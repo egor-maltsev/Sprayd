@@ -78,6 +78,19 @@ struct ArtAdditionView: View {
     @State private var selectedAuthor: Author? = Author(name: "Ana Markov")
     @State private var selectedCategory: Category? = Category(name: "Sponsored by government")
     
+    let onBackButtonTapped: () -> ()
+    
+    // MARK: - Lifecycle
+    init(addedPhotos: [Photo] = [], title: String = "", description: String = "", address: String = "", selectedAuthor: Author? = nil, selectedCategory: Category? = nil, onBackButtonTapped: @escaping () -> Void) {
+        self.addedPhotos = addedPhotos
+        self.title = title
+        self.description = description
+        self.address = address
+        self.selectedAuthor = selectedAuthor
+        self.selectedCategory = selectedCategory
+        self.onBackButtonTapped = onBackButtonTapped
+    }
+    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -136,7 +149,7 @@ struct ArtAdditionView: View {
         ZStack {
             HStack {
                 Button {
-                    // TODO: back action
+                    onBackButtonTapped()
                 } label: {
                     Image(Const.leftArrowIcon)
                 }
@@ -267,7 +280,7 @@ struct ArtAdditionView: View {
     }
 }
 
-// MARK: - Preview
-#Preview {
-    ArtAdditionView()
-}
+//// MARK: - Preview
+//#Preview {
+//    ArtAdditionView()
+//}

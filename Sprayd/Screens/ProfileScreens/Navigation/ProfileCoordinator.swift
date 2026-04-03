@@ -39,7 +39,8 @@ final class ProfileCoordinator: ObservableObject {
     func destination(for route: ProfileRoute) -> some View {
         switch (route) {
         case .addArt:
-            ArtAdditionView()
+            ArtAdditionView(onBackButtonTapped: { [weak self] in
+                self?.pop()})
         }
     }
 }
