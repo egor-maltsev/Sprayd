@@ -9,7 +9,9 @@ import MapKit
 import UIKit
 
 final class ArtItemAnnotationView: MKAnnotationView {
-    static let reuseIdentifier = "ArtItemAnnotationView"
+    static let annotationReuseIdentifier = "ArtItemAnnotationView"
+    static let clusterReuseIdentifier = "ArtClusterAnnotationView"
+    static let clusteringIdentifier = "art-item"
     
     private struct Constants {
         static let fatalError = "init(coder:) has not been implemented"
@@ -46,23 +48,33 @@ final class ArtItemAnnotationView: MKAnnotationView {
     // MARK: Configure
 
     func configure(
-        annotation: any ArtMapAnnotation,
+        annotation: any MKAnnotation,
         imageProvider: ((String) async -> Data?)?
     ) {
         imageTask?.cancel()
         imageView.image = UIImage()
 
-        if let clusterAnnotation = annotation as? ArtClusterAnnotation {
+        if let clusterAnnotation = annotation as? MKClusterAnnotation {
             countLabel.isHidden = false
-            countLabel.text = "\(clusterAnnotation.annotationsCount)"
+            countLabel.text = "\(clusterAnnotation.memberAnnotations.count)"
         } else {
             countLabel.isHidden = true
             countLabel.text = nil
         }
 
+        let imageURL: URL?
+        if let clusterAnnotation = annotation as? MKClusterAnnotation {
+            imageURL = clusterAnnotation.memberAnnotations
+                .compactMap { $0 as? ArtItemAnnotation }
+                .first?
+                .imageURL
+        } else {
+            imageURL = (annotation as? ArtItemAnnotation)?.imageURL
+        }
+
         guard
             let imageProvider,
-            let urlString = annotation.imageURL?.absoluteString
+            let urlString = imageURL?.absoluteString
         else {
             return
         }

@@ -7,41 +7,26 @@
 
 import MapKit
 
-final class ArtItemAnnotation: NSObject, MKAnnotation, ArtMapAnnotation {
-    private let item: ArtItem
-    // Нужны чтобы избежать RE из-за objc runtime
-    private let storedTitle: String
-    private let storedSubtitle: String
-
-    var itemIdentifier: ObjectIdentifier {
-        ObjectIdentifier(item)
-    }
+final class ArtItemAnnotation: NSObject, MKAnnotation {
+    let itemIdentifier: ObjectIdentifier
 
     let coordinate: CLLocationCoordinate2D
 
-    var title: String? {
-        storedTitle
-    }
+    let title: String?
 
-    var subtitle: String? {
-        storedSubtitle
-    }
+    let subtitle: String?
 
-    var imageURL: URL? {
-        item.primaryImageURL
-    }
-    
-    var author: String?
-    
-    var itemDescription: String?
-    
+    let imageURL: URL?
+
     init(item: ArtItem) {
-        self.item = item
-        coordinate = CLLocationCoordinate2D(
+        self.itemIdentifier = ObjectIdentifier(item)
+        self.coordinate = CLLocationCoordinate2D(
             latitude: item.latitude,
             longitude: item.longitude
         )
-        storedTitle = item.name
-        storedSubtitle = item.author
+        self.title = item.name
+        self.subtitle = item.author
+        self.imageURL = item.primaryImageURL
+        super.init()
     }
 }

@@ -18,7 +18,11 @@ struct UIKitMapView: UIViewRepresentable {
         mapView.delegate = context.coordinator
         mapView.register(
             ArtItemAnnotationView.self,
-            forAnnotationViewWithReuseIdentifier: ArtItemAnnotationView.reuseIdentifier
+            forAnnotationViewWithReuseIdentifier: ArtItemAnnotationView.annotationReuseIdentifier
+        )
+        mapView.register(
+            ArtItemAnnotationView.self,
+            forAnnotationViewWithReuseIdentifier: ArtItemAnnotationView.clusterReuseIdentifier
         )
         
         return mapView
@@ -88,35 +92,34 @@ final class UIKitMapCoordinator: NSObject, MKMapViewDelegate {
             return nil
         }
 
-        var identifier: String?
-        if annotation is ArtClusterAnnotation {
-            identifier = nil
-        } else if annotation is ArtMapAnnotation {
-            identifier = "art-item"
-        } else {
-            return nil
+        if let clusterAnnotation = annotation as? MKClusterAnnotation {
+            guard let view = mapView.dequeueReusableAnnotationView(
+                withIdentifier: ArtItemAnnotationView.clusterReuseIdentifier,
+                for: clusterAnnotation
+            ) as? ArtItemAnnotationView else { return nil }
+
+            view.clusteringIdentifier = nil
+            view.configure(
+                annotation: clusterAnnotation,
+                imageProvider: imageProvider
+            )
+            return view
         }
 
-        guard let view = mapView.dequeueReusableAnnotationView(
-            withIdentifier: ArtItemAnnotationView.reuseIdentifier,
-            for: annotation
-        ) as? ArtItemAnnotationView else { return nil }
-        view.clusteringIdentifier = identifier
+        if let artAnnotation = annotation as? ArtItemAnnotation {
+            guard let view = mapView.dequeueReusableAnnotationView(
+                withIdentifier: ArtItemAnnotationView.annotationReuseIdentifier,
+                for: artAnnotation
+            ) as? ArtItemAnnotationView else { return nil }
 
-        if let artAnnotation = annotation as? any ArtMapAnnotation {
+            view.clusteringIdentifier = ArtItemAnnotationView.clusteringIdentifier
             view.configure(
                 annotation: artAnnotation,
                 imageProvider: imageProvider
             )
+            return view
         }
 
-        return view
-    }
-
-    func mapView(
-        _ mapView: MKMapView,
-        clusterAnnotationForMemberAnnotations memberAnnotations: [any MKAnnotation]
-    ) -> MKClusterAnnotation {
-        ArtClusterAnnotation(memberAnnotations: memberAnnotations)
+        return nil
     }
 }

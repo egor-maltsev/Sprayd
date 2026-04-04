@@ -29,7 +29,7 @@ struct MainMapAssembly {
                         "https://picsum.photos/id/\(i)/200/300"
                     ],
                     location: "Moscow",
-                    author: "Ana Markov",
+                    author: "aboba", // UUID(),
                     state: .new,
                     category: "Mural",
                     latitude: 55.7558 + Double(Int.random(in: 1...100)) / 10000,
