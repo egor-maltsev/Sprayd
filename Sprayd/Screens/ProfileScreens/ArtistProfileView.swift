@@ -20,8 +20,8 @@ struct ArtistProfileView: View {
     
     // MARK: - Fields
     @State private var selectedOption = "Posted"
-    private var posts: [Post]?
-
+    private var posts: [ArtItem]?
+    
     // MARK: - Subviews
     private var bioView: some View {
         VStack {
@@ -51,17 +51,19 @@ struct ArtistProfileView: View {
     
     // TODO: - Replace with an array of works
     private var worksView: some View = ArtMediumCardView()
-        
+    
     // MARK: - Body
     var body: some View {
         ZStack {
             Color(Color.appBackground)
-                        .ignoresSafeArea()
+                .ignoresSafeArea()
             
             ScrollView {
                 VStack(alignment: .leading, spacing: Metrics.doubleModule) {
                     bioView
+
                     sectionTitle
+                    
                     worksView
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

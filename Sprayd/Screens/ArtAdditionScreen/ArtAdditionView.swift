@@ -34,19 +34,40 @@ struct ArtAdditionView: View {
         static let addressFieldTitle: String = "Address"
         static let addressFieldPlaceholder: String = "Add an address*"
         static let addPictureText: String = "Add a picture*"
-
+        
         // Fonts
         static let iconFont: Font = .system(size: 16, weight: .medium)
     }
     
     // MARK: - Fields
-    private var addedPhotos: [Photo] = []
+    private var addedPhotos: [ArtImage] = []
     
     @State private var title: String = ""
     @State private var description: String = ""
     @State private var address: String = "The UK, St. Andrew’s, New Avenue st. 22"
     @State private var selectedAuthor: Author? = Author(name: "Ana Markov")
     @State private var selectedCategory: Category? = Category(name: "Sponsored by government")
+    
+    let onBackButtonTapped: () -> ()
+    
+    // MARK: - Lifecycle
+    init(
+        addedPhotos: [ArtImage] = [],
+        title: String = "",
+        description: String = "",
+        address: String = "",
+        selectedAuthor: Author? = nil,
+        selectedCategory: Category? = nil,
+        onBackButtonTapped: @escaping () -> Void
+    ) {
+            self.addedPhotos = addedPhotos
+            self.title = title
+            self.description = description
+            self.address = address
+            self.selectedAuthor = selectedAuthor
+            self.selectedCategory = selectedCategory
+            self.onBackButtonTapped = onBackButtonTapped
+        }
     
     // MARK: - Body
     var body: some View {
@@ -96,6 +117,7 @@ struct ArtAdditionView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
     }
     
     // MARK: - Subviews
@@ -103,7 +125,7 @@ struct ArtAdditionView: View {
         ZStack {
             HStack {
                 Button {
-                    // TODO: back action
+                    onBackButtonTapped()
                 } label: {
                     Icons.leftArrow
                 }
@@ -224,14 +246,14 @@ struct ArtAdditionView: View {
     }
     
     // MARK: - Utility
-    func photoPreview(_ photo: Photo) -> some View {
+    func photoPreview(_ photo: ArtImage) -> some View {
         RoundedRectangle(cornerRadius: Const.photoItemCornerRadius)
             .fill(Color.placeholderGrey)
             .frame(width: Const.photoItemWidth, height: Const.photoItemHeight)
     }
 }
 
-// MARK: - Preview
-#Preview {
-    ArtAdditionView()
-}
+//// MARK: - Preview
+//#Preview {
+//    ArtAdditionView()
+//}

@@ -18,10 +18,13 @@ struct AddButton: View {
         static let textFont: Font = .system(size: 24, weight: .medium)
     }
     
+    // MARK: - Fields
+    var onTap: () -> ()
+
     // MARK: - Body
     var body: some View {
         Button {
-            // action
+            onTap()
         } label: {
             Icons.plus
                 .font(Const.textFont)
@@ -36,6 +39,6 @@ struct AddButton: View {
     }
 }
 
-#Preview {
-    AddButton()
-}
+//#Preview {
+//    AddButton()
+//}
