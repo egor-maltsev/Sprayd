@@ -18,15 +18,15 @@ struct ArtObjectView: View {
                 Color.appBackground
                     .ignoresSafeArea(edges: .all)
                 ScrollView {
-                    Spacer(minLength: 20)
+                    Spacer(minLength: Metrics.twoAndHalfModule)
                     ArtCardView(viewModel: self.viewModel)
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: Metrics.oneAndHalfModule) {
                         markVisitedButton
                         contributeButton
                     }
-                    .padding(.horizontal, 80)
-                    .padding(.top, 16)
+                    .padding(.horizontal, Metrics.tenTimesModule)
+                    .padding(.top, Metrics.doubleModule)
                 }
             }
             .navigationDestination(isPresented: $viewModel.isPhotoPreviewPresented) {
@@ -50,7 +50,7 @@ struct ArtObjectView: View {
                     .fontWeight(.medium)
             }
             .foregroundStyle(viewModel.isVisited ? .white : .primary)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, Metrics.twoAndHalfModule)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
             .background(
@@ -79,7 +79,7 @@ struct ArtObjectView: View {
                     .fontWeight(.medium)
             }
             .foregroundStyle(.white)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, Metrics.twoAndHalfModule)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
             .background(Color.black)

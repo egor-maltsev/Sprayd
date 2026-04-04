@@ -11,9 +11,6 @@ struct MiniProfileView: View {
     // MARK: - Constants
     private enum Const {
         static let avatarSize: CGFloat = 35
-        static let avatarSpacing: CGFloat = 12
-        
-        static let personNameFont: Font = .custom("InstrumentSans-Regular", size: 13)
         static let avatarImageName: String = "person.crop.circle.fill"
     }
     
@@ -22,7 +19,7 @@ struct MiniProfileView: View {
 
     // MARK: - Body
     var body: some View {
-        HStack(spacing: Const.avatarSpacing) {
+        HStack(spacing: Metrics.oneAndHalfModule) {
             Image(systemName: Const.avatarImageName)
                 .resizable()
                 .scaledToFill()
@@ -30,7 +27,7 @@ struct MiniProfileView: View {
                 .foregroundStyle(Color.secondaryColor.opacity(0.7))
             
             Text(name)
-                .font(Const.personNameFont)
+                .font(.InstrumentRegular13)
                 .foregroundStyle(.black)
         }
     }
