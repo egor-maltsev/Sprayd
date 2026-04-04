@@ -47,7 +47,7 @@ struct ArtAdditionView: View {
     }
     
     // MARK: - Fields
-    private var addedPhotos: [Photo] = []
+    private var addedPhotos: [ArtImage] = []
     
     @State private var title: String = ""
     @State private var description: String = ""
@@ -59,7 +59,7 @@ struct ArtAdditionView: View {
     
     // MARK: - Lifecycle
     init(
-        addedPhotos: [Photo] = [],
+        addedPhotos: [ArtImage] = [],
         title: String = "",
         description: String = "",
         address: String = "",
@@ -256,7 +256,7 @@ struct ArtAdditionView: View {
     }
     
     // MARK: - Utility
-    func photoPreview(_ photo: Photo) -> some View {
+    func photoPreview(_ photo: ArtImage) -> some View {
         RoundedRectangle(cornerRadius: Const.photoItemCornerRadius)
             .fill(Color.placeholderGrey)
             .frame(width: Const.photoItemWidth, height: Const.photoItemHeight)

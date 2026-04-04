@@ -21,7 +21,7 @@ struct UserProfileView: View {
     
     // MARK: - Fields
     @State private var selectedOption = "Posted"
-    private var posts: [Post]?
+    private var posts: [ArtItem]?
 
     // MARK: - Subviews
     private var bioView: some View {
