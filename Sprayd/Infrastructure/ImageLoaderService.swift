@@ -12,6 +12,7 @@ import SwiftData
 final class ImageLoaderService {
     private let modelContext: ModelContext
     private let urlSession: URLSession
+    private var memoryCache: [String: Data] = [:]
 
     init(
         modelContext: ModelContext,
@@ -22,7 +23,12 @@ final class ImageLoaderService {
     }
 
     func loadImageData(from urlString: String) async -> Data? {
+        if let memoryCachedData = memoryCache[urlString] {
+            return memoryCachedData
+        }
+
         if let storedData = fetchCachedImageData(for: urlString) {
+            memoryCache[urlString] = storedData
             return storedData
         }
 
@@ -38,6 +44,7 @@ final class ImageLoaderService {
                 return nil
             }
 
+            memoryCache[urlString] = data
             upsertCachedImage(data: data, for: urlString)
             return data
         } catch {
@@ -46,18 +53,14 @@ final class ImageLoaderService {
     }
 
     private func fetchCachedImageData(for urlString: String) -> Data? {
-        let descriptor = FetchDescriptor<ArtImage>()
-        let cachedImages = (try? modelContext.fetch(descriptor)) ?? []
-        return cachedImages.first(where: { $0.urlString == urlString })?.img
+        cachedImage(for: urlString)?.img
     }
 
     private func upsertCachedImage(data: Data, for urlString: String) {
-        let descriptor = FetchDescriptor<ArtImage>()
-        let cachedImages = (try? modelContext.fetch(descriptor)) ?? []
-
-        if let existingCache = cachedImages.first(where: { $0.urlString == urlString }) {
+        if let existingCache = cachedImage(for: urlString) {
             existingCache.img = data
             existingCache.date = .now
+            existingCache.timeStamp = Date().timeIntervalSince1970
         } else {
             let cachedImage = ArtImage(
                 img: data,
@@ -67,5 +70,15 @@ final class ImageLoaderService {
         }
 
         try? modelContext.save()
+    }
+
+    private func cachedImage(for urlString: String) -> ArtImage? {
+        var descriptor = FetchDescriptor<ArtImage>(
+            predicate: #Predicate<ArtImage> { image in
+                image.urlString == urlString
+            }
+        )
+        descriptor.fetchLimit = 1
+        return try? modelContext.fetch(descriptor).first
     }
 }

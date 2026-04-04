@@ -17,25 +17,6 @@ struct ContentView: View {
     }
 
     var body: some View {
-        TabView {
-            MainMapAssembly(
-                modelContext: compositionRoot.modelContext,
-                imageLoader: compositionRoot.imageLoaderService
-            )
-            .build()
-            .tabItem {
-                Label("Map", systemImage: "map")
-            }
-
-            FeaturedView()
-                .tabItem {
-                    Label("Featured", systemImage: "star")
-                }
-
-            MyProfileView()
-                .tabItem {
-                    Label("Account", systemImage: "person.crop.circle.fill")
-                }
-        }
+        AppCoordinatorView(compositionRoot: compositionRoot)
     }
 }
