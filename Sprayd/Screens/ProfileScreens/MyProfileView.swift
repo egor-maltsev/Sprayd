@@ -12,29 +12,14 @@ struct MyProfileView: View {
     private enum Const {
         // Strings
         static let postedButtonBottomText: String = "Add new seen art"
-        
         static let vButtonBottomText: String = "Add new seen art"
-        
         static let postedSectionText: String = "Posted"
         static let visitedSectionText: String = "Visited"
         
         // UI constraint properties
         static let profileImageSize: CGFloat = 160
         static let profileImageCornerRadius: CGFloat = profileImageSize / 2
-        
-        static let usernameDescriptionSpacing: CGFloat = 13
-        
         static let choosePhotoButtonSize: CGFloat = 40
-        static let choosePhotoButtonOffset: CGFloat = -6
-        
-        static let mainStackSpacing: CGFloat = 16
-        
-        // Fonts
-        static let usernameFont: Font = .custom("Climate Crisis", size: 22)
-        static let descriptionFont: Font = .custom("InstrumentSans-Medium", size: 13)
-        static let optionsFont: Font = .custom("InstrumentSans-Medium", size: 16)
-        static let sectionTitleFont: Font = .custom("Climate Crisis", size: 20)
-        static let buttonBottomTextFont: Font = .custom("InstrumentSans-Medium", size: 13)
     }
     
     // MARK: - Fields
@@ -71,21 +56,21 @@ struct MyProfileView: View {
                         .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
-                .offset(x: Const.choosePhotoButtonOffset, y: Const.choosePhotoButtonOffset)
+                .offset(x: -Metrics.halfModule, y: -Metrics.halfModule)
             }
             .frame(maxWidth: .infinity)
             
-            VStack(spacing: Const.usernameDescriptionSpacing) {
+            VStack(spacing: Metrics.oneAndHalfModule) {
                 HStack {
                     Text("Username")
-                        .font(Const.usernameFont)
+                        .font(.ClimateCrisisRegular22)
                     Image(systemName: "pencil")
                 }
                 .frame(maxWidth: .infinity)
                 
                 HStack {
                     Text("Description")
-                        .font(Const.descriptionFont)
+                        .font(.InstrumentMedium13)
                     Image(systemName: "pencil")
                 }
                 .frame(maxWidth: .infinity)
@@ -105,7 +90,7 @@ struct MyProfileView: View {
     private var sectionTitle: some View {
         Text(selectedOption)
             .frame(maxWidth: 150)
-            .font(Const.sectionTitleFont)
+            .font(.ClimateCrisisRegular20)
     }
     
     private var addButtonView: some View {
@@ -113,7 +98,7 @@ struct MyProfileView: View {
             AddButton(onTap: onAddArt)
             
             Text(Const.postedButtonBottomText)
-                .font(Const.buttonBottomTextFont)
+                .font(.InstrumentMedium13)
         }
         .frame(maxWidth: .infinity)
     }
@@ -128,11 +113,9 @@ struct MyProfileView: View {
                 .ignoresSafeArea()
             
             ScrollView {
-                VStack(alignment: .leading, spacing: Const.mainStackSpacing) {
+                VStack(alignment: .leading, spacing: Metrics.doubleModule) {
                     bioView
-                    
                     pickerView
-                    
                     sectionTitle
                     
                     if selectedOption == Const.postedSectionText {

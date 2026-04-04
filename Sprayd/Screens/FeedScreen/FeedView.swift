@@ -69,8 +69,8 @@ struct FeaturedView: View {
     ]
 
     private let gridColumns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
+        GridItem(.flexible(), spacing: Metrics.oneAndHalfModule),
+        GridItem(.flexible(), spacing: Metrics.oneAndHalfModule)
     ]
 
     var body: some View {
@@ -79,35 +79,35 @@ struct FeaturedView: View {
                 .ignoresSafeArea()
 
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: Metrics.tripleModule) {
                     searchBar
 
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                         sectionTitle("Featured")
                         featuredCard(item: featuredItem)
                     }
 
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                         sectionTitle("Cities")
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
+                            HStack(spacing: Metrics.oneAndHalfModule) {
                                 ForEach(cities, id: \.self) { city in
                                     cityCard(title: city)
                                 }
                             }
-                            .padding(.trailing, 8)
+                            .padding(.trailing, Metrics.module)
                         }
                     }
 
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                         sectionTitle("Discover")
 
                         if let first = discoverItems.first {
                             discoverLargeCard(item: first)
-                                .padding(.bottom, 8)
+                                .padding(.bottom, Metrics.module)
                         }
 
-                        LazyVGrid(columns: gridColumns, spacing: 18) {
+                        LazyVGrid(columns: gridColumns, spacing: Metrics.doubleModule) {
                             ForEach(Array(discoverItems.dropFirst().enumerated()), id: \.offset) { _, item in
                                 discoverSmallCard(item: item)
                             }
@@ -115,28 +115,28 @@ struct FeaturedView: View {
                     }
 
                     Color.clear
-                        .frame(height: 16)
+                        .frame(height: Metrics.doubleModule)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 14)
-                .padding(.bottom, 16)
+                .padding(.horizontal, Metrics.tripleModule)
+                .padding(.top, Metrics.oneAndHalfModule)
+                .padding(.bottom, Metrics.oneAndHalfModule)
             }
         }
     }
 
     private var searchBar: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Metrics.module) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(.gray)
 
             Text("Search for an art object")
-                .font(.system(size: 12))
+                .font(.InstrumentRegular13)
                 .foregroundStyle(.gray)
 
             Spacer()
         }
-        .padding(.horizontal, 14)
+        .padding(.horizontal, Metrics.oneAndHalfModule)
         .frame(height: 42)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -147,24 +147,24 @@ struct FeaturedView: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: 28, weight: .black, design: .rounded))
+            .font(.ClimateCrisisRegular22)
             .foregroundStyle(.black)
     }
 
     private func featuredCard(item: ArtItem) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             imagePlaceholder(height: 122)
 
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: Metrics.module) {
                     Text(item.name)
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.InstrumentBold20)
                         .foregroundStyle(.black)
 
-                    HStack(spacing: 6) {
+                    HStack(spacing: Metrics.module) {
                         Circle()
                             .fill(Color.gray.opacity(0.45))
-                            .frame(width: 18, height: 18)
+                            .frame(width: 24, height: 24)
                             .overlay {
                                 Image(systemName: "person.fill")
                                     .font(.system(size: 8))
@@ -172,7 +172,7 @@ struct FeaturedView: View {
                             }
 
                         Text(item.author)
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.InstrumentMedium13)
                             .foregroundStyle(.black.opacity(0.8))
                     }
                 }
@@ -180,20 +180,20 @@ struct FeaturedView: View {
                 Spacer()
 
                 likesView(count: 22)
-                    .padding(.top, 6)
+                    .padding(.top, Metrics.module)
             }
         }
     }
 
     private func cityCard(title: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Metrics.module) {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color.gray.opacity(0.16))
                 .frame(width: 74, height: 78)
 
-            HStack(spacing: 6) {
+            HStack(spacing: Metrics.module) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.InstrumentBold17)
                     .foregroundStyle(.black)
 
                 Image(systemName: "chevron.right")
@@ -205,22 +205,22 @@ struct FeaturedView: View {
     }
 
     private func discoverLargeCard(item: ArtItem) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             imagePlaceholder(height: 192)
 
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: Metrics.module) {
                     Text(item.name)
-                        .font(.system(size: 24, weight: .bold))
+                        .font(Font.InstrumentBold20)
                         .foregroundStyle(.black)
 
-                    HStack(spacing: 4) {
+                    HStack(spacing: Metrics.halfModule) {
                         Image(systemName: "mappin.circle")
                             .font(.system(size: 12))
                             .foregroundStyle(.gray)
 
                         Text(item.location)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.InstrumentMedium13)
                             .foregroundStyle(.gray)
                     }
                 }
@@ -228,10 +228,10 @@ struct FeaturedView: View {
                 Spacer()
 
                 likesView(count: 22)
-                    .padding(.top, 6)
+                    .padding(.top, Metrics.module)
             }
         }
-        .padding(12)
+        .padding(Metrics.oneAndHalfModule)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .stroke(Color.black.opacity(0.35), lineWidth: 1)
@@ -239,17 +239,17 @@ struct FeaturedView: View {
     }
 
     private func discoverSmallCard(item: ArtItem) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             imagePlaceholder(height: 122)
 
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: Metrics.module) {
                     Text(item.name)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.InstrumentBold17)
                         .foregroundStyle(.black)
                         .lineLimit(1)
 
-                    HStack(spacing: 4) {
+                    HStack(spacing: Metrics.halfModule) {
                         Circle()
                             .fill(Color.gray.opacity(0.45))
                             .frame(width: 16, height: 16)
@@ -260,13 +260,13 @@ struct FeaturedView: View {
                             }
 
                         Text(item.author)
-                            .font(.system(size: 9, weight: .medium))
+                            .font(.InstrumentMedium10)
                             .foregroundStyle(.black.opacity(0.8))
                             .lineLimit(1)
                     }
                 }
 
-                Spacer(minLength: 6)
+                Spacer(minLength: Metrics.module)
 
                 likesView(count: 22)
                     .scaleEffect(0.9, anchor: .topTrailing)
@@ -275,9 +275,9 @@ struct FeaturedView: View {
     }
 
     private func likesView(count: Int) -> some View {
-        HStack(spacing: 4) {
+        HStack(spacing: Metrics.halfModule) {
             Text("\(count)")
-                .font(.system(size: 12, weight: .medium))
+                .font(.InstrumentMedium13)
                 .foregroundStyle(.black)
 
             Image(systemName: "heart")

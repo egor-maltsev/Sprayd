@@ -10,18 +10,7 @@ import SwiftUI
 struct ArtCardView: View {
     // MARK: - Constants
     private enum Const {
-        static let cardHorizontalPadding: CGFloat = 24
-        static let cardTopPadding: CGFloat = 5
-
         static let imageCornerRadius: CGFloat = 30
-
-        static let contentSpacing: CGFloat = 18
-        static let sectionSpacing: CGFloat = 10
-        static let peopleBlockSpacing: CGFloat = 14
-
-        static let titleToMetaSpacing: CGFloat = 6
-        static let descriptionTopSpacing: CGFloat = 8
-
         static let heartIconSize: CGFloat = 18
         static let locationIconSize: CGFloat = 18
 
@@ -73,9 +62,9 @@ struct ArtCardView: View {
                 .font(Font.InstrumentBold20)
                 .foregroundStyle(.black)
 
-            Spacer(minLength: 12)
+            Spacer(minLength: Metrics.oneAndHalfModule)
 
-            HStack(spacing: 8) {
+            HStack(spacing: Metrics.module) {
                 Text(String(viewModel.likesCount))
                     .font(Font.InstrumentMedium13)
                     .foregroundStyle(.black)
@@ -107,7 +96,7 @@ struct ArtCardView: View {
             }
             .foregroundStyle(Color.secondaryColor)
 
-            Spacer(minLength: 12)
+            Spacer(minLength: Metrics.oneAndHalfModule)
 
             Text(viewModel.dateText)
                 .font(Font.InstrumentRegular13)
@@ -121,11 +110,11 @@ struct ArtCardView: View {
             .foregroundStyle(Color.secondaryColor)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.top, Const.descriptionTopSpacing)
+            .padding(.top, Metrics.module)
     }
 
     private func personSection(title: String, titleFont: Font, name: String) -> some View {
-        VStack(alignment: .leading, spacing: Const.sectionSpacing) {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text(title)
                 .font(titleFont)
                 .foregroundStyle(Color.accentRed)
@@ -137,17 +126,17 @@ struct ArtCardView: View {
     // MARK: - Body
     var body: some View {
         @Bindable var vm = viewModel
-        VStack(alignment: .leading, spacing: Const.contentSpacing) {
+        VStack(alignment: .leading, spacing: Metrics.doubleModule) {
             photoPager(selection: $vm.selectedPhotoIndex)
 
-            VStack(alignment: .leading, spacing: Const.titleToMetaSpacing) {
+            VStack(alignment: .leading, spacing: Metrics.threeQuartersModule) {
                 titleRow
                 metaRow
             }
 
             descriptionText
 
-            VStack(alignment: .leading, spacing: Const.peopleBlockSpacing) {
+            VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                 personSection(
                     title: "Author",
                     titleFont: Font.InstrumentMedium13,
@@ -161,9 +150,9 @@ struct ArtCardView: View {
                 )
             }
         }
-        .padding(.horizontal, Const.cardHorizontalPadding)
-        .padding(.top, Const.cardTopPadding)
-        .padding(.bottom, Const.cardTopPadding)
+        .padding(.horizontal, Metrics.tripleModule)
+        .padding(.top, Metrics.threeQuartersModule)
+        .padding(.bottom, Metrics.threeQuartersModule)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

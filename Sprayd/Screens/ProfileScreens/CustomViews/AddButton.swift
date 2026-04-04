@@ -27,7 +27,7 @@ struct AddButton: View {
     
     // MARK: - Fields
     var onTap: () -> ()
-    
+
     // MARK: - Body
     var body: some View {
         Button {

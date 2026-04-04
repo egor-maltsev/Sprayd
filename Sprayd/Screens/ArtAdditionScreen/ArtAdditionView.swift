@@ -14,52 +14,29 @@ struct ArtAdditionView: View {
         static let photoItemHeight: CGFloat = 136
         static let photoItemWidth: CGFloat = 127
         static let photoItemCornerRadius: CGFloat = 30
-        
-        static let screenHorizontalPadding: CGFloat = 25
-        static let sectionSpacing: CGFloat = 14
-        
         static let authorAvatarSize: CGFloat = 42
-        
         static let createButtonHeight: CGFloat = 48
         static let createButtonCornerRadius: CGFloat = 24
-        static let createButtonHorizontalPadding: CGFloat = 32
-        
         static let narrowInputFieldHeight: CGFloat = 44
         static let wideInputFieldHeight: CGFloat = 120
-        
-        static let mainSpacing: CGFloat = 23
         
         // Strings
         static let authorSectionTitleText: String = "Author"
         static let selectAuthButtonText: String = "Select an author"
-        
         static let selectCategoryButtonText: String = "Select category"
-        
         static let headerText: String = "Add new art"
-        
         static let createButtonText: String = "Create"
         static let categoryText: String = "Category"
-        
         static let titleFieldTitle: String = "Title"
         static let titleFieldPlaceholder: String = "Add a title*"
-        
         static let descriptionFieldTitle: String = "Description"
         static let descriptionFieldPlaceholder: String = "Add a description*"
-        
         static let addressFieldTitle: String = "Address"
         static let addressFieldPlaceholder: String = "Add an address*"
-        
         static let addPictureText: String = "Add a picture*"
         
         // Fonts
         static let iconFont: Font = .system(size: 16, weight: .medium)
-        static let sectionTitleFont: Font = .InstrumentMedium16
-        static let headerTitleFont: Font = .InstrumentBold20
-        static let inputTextFont: Font = .InstrumentRegular18
-        static let sectionTextFont: Font = .InstrumentMedium18
-        static let bodyTextFont: Font = .InstrumentMedium18
-        static let createButtonFont: Font = .InstrumentMedium20
-        static let addPhotoButtonFont: Font = .InstrumentRegular13
         
         // Icons
         static let photoIcon: String = "photo"
@@ -106,9 +83,8 @@ struct ArtAdditionView: View {
                 .ignoresSafeArea()
             
             ScrollView {
-                VStack(alignment: .leading, spacing: Const.mainSpacing) {
+                VStack(alignment: .leading, spacing: Metrics.tripleModule) {
                     headerView
-                    
                     photoSection
                     
                     OutlinedInputField(
@@ -138,13 +114,12 @@ struct ArtAdditionView: View {
                     )
                     
                     categorySection
-                    
                     createButton
-                        .padding(.top, 24)
-                        .padding(.bottom, 20)
+                        .padding(.top, Metrics.tripleModule)
+                        .padding(.bottom, Metrics.twoAndHalfModule)
                 }
-                .padding(.horizontal, Const.screenHorizontalPadding)
-                .padding(.top, 18)
+                .padding(.horizontal, Metrics.tripleModule)
+                .padding(.top, Metrics.twoAndHalfModule)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -166,7 +141,7 @@ struct ArtAdditionView: View {
             }
             
             Text(Const.headerText)
-                .font(Const.headerTitleFont)
+                .font(.InstrumentBold20)
                 .foregroundStyle(Color.black)
         }
         .frame(height: 44)
@@ -174,14 +149,14 @@ struct ArtAdditionView: View {
     
     private var photoSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: Metrics.oneAndHalfModule) {
                 choosePhotoButton
                 
                 ForEach(addedPhotos) { photo in
                     photoPreview(photo)
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, Metrics.halfModule)
         }
     }
     
@@ -189,13 +164,13 @@ struct ArtAdditionView: View {
         Button {
             // TODO: - Open photo choice screen
         } label: {
-            VStack(spacing: 10) {
+            VStack(spacing: Metrics.oneAndHalfModule) {
                 Image(systemName: Const.photoIcon)
                     .font(.system(size: 28, weight: .medium))
                     .foregroundStyle(Color.white)
                 
                 Text(Const.addPictureText)
-                    .font(Const.addPhotoButtonFont)
+                    .font(.InstrumentRegular13)
                     .foregroundStyle(Color.white)
             }
             .frame(width: Const.photoItemWidth, height: Const.photoItemHeight)
@@ -205,13 +180,13 @@ struct ArtAdditionView: View {
     }
     
     var authorSection: some View {
-        VStack(alignment: .leading, spacing: Const.sectionSpacing) {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text(Const.authorSectionTitleText)
-                .font(Const.sectionTextFont)
+                .font(.InstrumentMedium18)
                 .foregroundStyle(Color.black)
             
             if let selectedAuthor {
-                HStack(spacing: 12) {
+                HStack(spacing: Metrics.oneAndHalfModule) {
                     Circle()
                         .fill(Color.gray.opacity(0.45))
                         .frame(width: Const.authorAvatarSize, height: Const.authorAvatarSize)
@@ -221,7 +196,7 @@ struct ArtAdditionView: View {
                         }
                     
                     Text(selectedAuthor.name)
-                        .font(Const.bodyTextFont)
+                        .font(.InstrumentMedium18)
                         .foregroundStyle(Color.black)
                 }
             }
@@ -237,9 +212,9 @@ struct ArtAdditionView: View {
     }
     
     var categorySection: some View {
-        VStack(alignment: .leading, spacing: Const.sectionSpacing) {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text(Const.categoryText)
-                .font(Const.sectionTextFont)
+                .font(.InstrumentMedium18)
                 .foregroundStyle(Color.black)
             
             if let selectedCategory {
@@ -262,9 +237,9 @@ struct ArtAdditionView: View {
         } label: {
             HStack {
                 Spacer()
-                
+
                 Text(Const.createButtonText)
-                    .font(Const.createButtonFont)
+                    .font(.InstrumentMedium20)
                     .foregroundStyle(Color.white)
                 
                 Spacer()
@@ -272,12 +247,12 @@ struct ArtAdditionView: View {
                 Image(Const.createButtonIcon)
                     .foregroundStyle(Color.white)
             }
-            .padding(.horizontal, 28)
+            .padding(.horizontal, Metrics.tripleModule)
             .frame(height: Const.createButtonHeight)
             .background(Color.accentRed)
             .clipShape(RoundedRectangle(cornerRadius: Const.createButtonCornerRadius))
         }
-        .padding(.horizontal, Const.createButtonHorizontalPadding)
+        .padding(.horizontal, Metrics.quadrupleModule)
     }
     
     // MARK: - Utility

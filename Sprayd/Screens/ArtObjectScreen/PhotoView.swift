@@ -31,8 +31,7 @@ struct PhotoView: View {
                 Color.appBackground.ignoresSafeArea()
 
                 VStack {
-                    Spacer(minLength: 0)
-
+                    Spacer()
                     TabView(selection: $selectedPhotoIndex) {
                         ForEach(photoImageNames.indices, id: \.self) { index in
                             photoPage(index: index, width: safeWidth, height: tabHeight)
@@ -42,7 +41,7 @@ struct PhotoView: View {
                     .tabViewStyle(.page(indexDisplayMode: .automatic))
                     .offset(y: -safeHeight * 0.06)
 
-                    Spacer(minLength: 0)
+                    Spacer()
                 }
             }
         }
