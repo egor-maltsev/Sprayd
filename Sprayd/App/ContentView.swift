@@ -6,13 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
+@MainActor
 struct ContentView: View {
-    var body: some View {
-        AppCoordinatorView()
-    }
-}
+    private let compositionRoot: CompositionRoot
 
-#Preview {
-    ContentView()
+    init(compositionRoot: CompositionRoot) {
+        self.compositionRoot = compositionRoot
+    }
+
+    var body: some View {
+        AppCoordinatorView(compositionRoot: compositionRoot)
+    }
 }
