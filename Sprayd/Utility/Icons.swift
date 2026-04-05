@@ -20,7 +20,6 @@ struct Icons {
     
     static var chevronRight: some View {
         Image(systemName: "chevron.right")
-            .foregroundStyle(.black.opacity(0.75))
     }
     
     static var location: some View {

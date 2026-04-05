@@ -12,7 +12,7 @@ struct StartingView: View {
     private enum Const {
         static let buttonHeight: CGFloat = 56
         static let buttonCornerRadius: CGFloat = 28
-        static let gradientRadius: CGFloat = 400
+        static let titleTopInset: CGFloat = 48
 
         static let titleText = "Sprayd"
         static let subtitleText = "Discover new street art and\npost your own!"
@@ -24,34 +24,17 @@ struct StartingView: View {
 
     // MARK: - Body
     var body: some View {
-        ZStack {
-            backgroundGradient
-                .ignoresSafeArea()
-
-            VStack {
-                Spacer()
-                titleSection
-                Spacer()
-                getStartedButton
-                    .padding(.bottom, Metrics.quadrupleModule)
-            }
-            .padding(.horizontal, Metrics.tripleModule)
+        VStack {
+            Spacer()
+            titleSection
+            Spacer()
+            getStartedButton
+                .padding(.bottom, Metrics.quadrupleModule)
         }
+        .padding(.horizontal, Metrics.tripleModule)
     }
 
     // MARK: - Subviews
-    private var backgroundGradient: some View {
-        RadialGradient(
-            gradient: Gradient(colors: [
-                .gradientCenterColor,
-                .gradientEdgeColor
-            ]),
-            center: .center,
-            startRadius: 0,
-            endRadius: Const.gradientRadius
-        )
-    }
-
     private var titleSection: some View {
         VStack(spacing: Metrics.doubleModule) {
             Text(Const.titleText)
@@ -63,6 +46,7 @@ struct StartingView: View {
                 .foregroundStyle(.black)
                 .multilineTextAlignment(.center)
         }
+        .padding(.top, Const.titleTopInset)
     }
 
     private var getStartedButton: some View {
@@ -81,5 +65,5 @@ struct StartingView: View {
 
 // MARK: - Preview
 #Preview {
-    StartingView(onGetStartedTapped: {})
+    OnboardingView()
 }

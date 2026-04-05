@@ -197,6 +197,7 @@ struct FeaturedView: View {
 
                 Icons.chevronRight
                     .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.black.opacity(0.75))
             }
         }
         .frame(width: 90, alignment: .leading)

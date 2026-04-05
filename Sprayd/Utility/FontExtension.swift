@@ -9,6 +9,7 @@ import SwiftUI
 
 extension Font {
     static let InstrumentRegular13 = Font.custom("InstrumentSans-Regular", size: 13)
+    static let InstrumentRegular16 = Font.custom("InstrumentSans-Regular", size: 16)
     static let InstrumentRegular18 = Font.custom("InstrumentSans-Regular", size: 18)
 
     static let InstrumentBold22 = Font.custom("InstrumentSans-Bold", size: 22)

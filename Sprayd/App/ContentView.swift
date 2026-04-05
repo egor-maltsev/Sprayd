@@ -14,10 +14,8 @@ struct ContentView: View {
         if hasCompletedOnboarding {
             AppCoordinatorView()
         } else {
-            StartingView {
-                withAnimation {
-                    hasCompletedOnboarding = true
-                }
+            OnboardingView {
+                hasCompletedOnboarding = true
             }
         }
     }
