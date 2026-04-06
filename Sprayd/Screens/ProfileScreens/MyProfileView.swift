@@ -19,9 +19,12 @@ struct MyProfileView: View {
         // UI constraint properties
         static let profileImageSize: CGFloat = 160
         static let choosePhotoButtonSize: CGFloat = 40
+        static let logoutButtonSize: CGFloat = 40
+        static let logoutIconPointSize: CGFloat = 17
     }
     
     // MARK: - Fields
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var selectedOption = "Posted"
     private var posts: [ArtItem]?
     let onAddArt: () -> ()
@@ -102,6 +105,26 @@ struct MyProfileView: View {
     // TODO: - Replace with an array of posts
     private var postView: some View = ArtMediumCardView()
     
+    private var logoutButton: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                hasCompletedOnboarding = false
+            }
+        } label: {
+            Circle()
+                .fill(Color.accentRed)
+                .frame(width: Const.logoutButtonSize, height: Const.logoutButtonSize)
+                .overlay {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.system(size: Const.logoutIconPointSize, weight: .semibold))
+                        .foregroundStyle(Color.white)
+                }
+                .shadow(radius: 3)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Log out")
+    }
+    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -123,9 +146,20 @@ struct MyProfileView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            HStack {
+                Spacer()
+                logoutButton
+            }
+            .padding(.leading, Metrics.tripleModule)
+            .padding(.trailing, Metrics.tripleModule)
+            .padding(.bottom, Metrics.module)
+            .background(Color.appBackground)
+        }
     }
 }
 
-//#Preview {
-//    MyProfileView(onArtAdd: {})
-//}
+#Preview {
+    MyProfileView(posts: nil, onAddArt: {})
+}
