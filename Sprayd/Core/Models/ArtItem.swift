@@ -13,6 +13,7 @@ final class ArtItem {
     var name: String
     var itemDescription: String
     @Relationship(deleteRule: .cascade) var images: [ArtImage]
+    var imageUrls: [String]
     var location: String
     @Attribute(originalName: "author") var createdBy: String
     var uploadedBy: String?
@@ -27,6 +28,7 @@ final class ArtItem {
         name: String = "",
         itemDescription: String = "",
         images: [String] = [],
+        storedImages: [ArtImage] = [],
         location: String = "",
         author: String = "",
         uploadedBy: String? = nil,
@@ -39,7 +41,8 @@ final class ArtItem {
     ) {
         self.name = name
         self.itemDescription = itemDescription
-        self.images = images.map { ArtImage(urlString: $0) }
+        self.images = storedImages
+        self.imageUrls = images
         self.location = location
         self.createdBy = author
         self.uploadedBy = uploadedBy
@@ -67,7 +70,9 @@ final class ArtItem {
     }
 
     var primaryImageURL: URL? {
-        for candidate in imageUrls {
+        let candidates = imageUrls + images.map(\.urlString)
+
+        for candidate in candidates {
             let value = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !value.isEmpty else { continue }
             if let url = URL(string: value) {

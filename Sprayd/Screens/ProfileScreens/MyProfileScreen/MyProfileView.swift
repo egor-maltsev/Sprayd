@@ -12,28 +12,28 @@ struct MyProfileView: View {
     private enum Const {
         // Strings
         static let postedButtonBottomText: String = "Add new seen art"
-        static let vButtonBottomText: String = "Add new seen art"
         static let postedSectionText: String = "Posted"
         static let visitedSectionText: String = "Visited"
-        
+
         // UI constraint properties
         static let profileImageSize: CGFloat = 160
         static let choosePhotoButtonSize: CGFloat = 40
+        static let logoutButtonSize: CGFloat = 40
+        static let logoutIconPointSize: CGFloat = 17
     }
     
     // MARK: - Fields
-    @State private var selectedOption = "Posted"
-    private var posts: [ArtItem]?
-    let onAddArt: () -> ()
+    @ObservedObject var viewModel: MyProfileViewModel
+    let onAddArt: () -> Void
     
     // MARK: - Lifecycle
     init(
-            posts: [ArtItem]? = nil,
-            onAddArt: @escaping () -> Void
-        ) {
-            self.posts = posts
-            self.onAddArt = onAddArt
-        }
+        onAddArt: @escaping () -> Void,
+        viewModel: MyProfileViewModel
+    ) {
+        self.onAddArt = onAddArt
+        self.viewModel = viewModel
+    }
     
     // MARK: - Subviews
     private var bioView: some View {
@@ -41,7 +41,7 @@ struct MyProfileView: View {
             ZStack(alignment: .bottomTrailing) {
                 Icons.personCircle
                     .frame(width: Const.profileImageSize, height: Const.profileImageSize)
-
+                
                 Button {
                     // TODO: - Open photo choice screen
                 } label: {
@@ -58,14 +58,15 @@ struct MyProfileView: View {
             
             VStack(spacing: Metrics.oneAndHalfModule) {
                 HStack {
-                    Text("Username")
-                        .font(.ClimateCrisisRegular22)
+                    Text(viewModel.username)
+                        .font(.ClimateCrisis22)
+
                     Icons.pencil
                 }
                 .frame(maxWidth: .infinity)
                 
                 HStack {
-                    Text("Description")
+                    Text(viewModel.bio)
                         .font(.InstrumentMedium13)
                     Icons.pencil
                 }
@@ -75,18 +76,18 @@ struct MyProfileView: View {
     }
     
     private var pickerView: some View {
-        Picker("", selection: $selectedOption) {
-            Text(Const.postedSectionText).tag(Const.postedSectionText)
-            Text(Const.visitedSectionText).tag(Const.visitedSectionText)
+        Picker("", selection: $viewModel.selectedOption) {
+            Text(Const.postedSectionText).tag(MyProfileViewModel.Option.posted)
+            Text(Const.visitedSectionText).tag(MyProfileViewModel.Option.visited)
         }
         .pickerStyle(.segmented)
         .padding(.horizontal)
     }
     
     private var sectionTitle: some View {
-        Text(selectedOption)
+        Text(viewModel.selectedOptionTitle)
             .frame(maxWidth: 150)
-            .font(.ClimateCrisisRegular20)
+            .font(.ClimateCrisis20)
     }
     
     private var addButtonView: some View {
@@ -99,8 +100,40 @@ struct MyProfileView: View {
         .frame(maxWidth: .infinity)
     }
     
-    // TODO: - Replace with an array of posts
-    private var postView: some View = ArtMediumCardView()
+    private var itemsView: some View {
+        VStack {
+            if let items = viewModel.displayedItems {
+                ForEach(items) { item in
+                    ArtMediumCardView(
+                        title: item.name,
+                        location: item.location,
+                        description: item.itemDescription,
+                        date: "01.01.25",
+                        postAuthorName: "PostAuthor",
+                        artworkAuthorName: item.author)
+                }
+            }
+        }
+    }
+    
+    private var logoutButton: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                viewModel.hasCompletedOnboarding = false
+            }
+        } label: {
+            Circle()
+                .fill(Color.accentRed)
+                .frame(width: Const.logoutButtonSize, height: Const.logoutButtonSize)
+                .overlay {
+                    Icons.logOut
+                        .font(.system(size: Const.logoutIconPointSize, weight: .semibold))
+                }
+                .shadow(radius: 3)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Log out")
+    }
     
     // MARK: - Body
     var body: some View {
@@ -114,18 +147,29 @@ struct MyProfileView: View {
                     pickerView
                     sectionTitle
                     
-                    if selectedOption == Const.postedSectionText {
+                    if viewModel.shouldDisplayAddButton {
                         addButtonView
                     }
                     
-                    postView
+                    itemsView
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+        }
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            HStack {
+                Spacer()
+                logoutButton
+            }
+            .padding(.leading, Metrics.tripleModule)
+            .padding(.trailing, Metrics.tripleModule)
+            .padding(.bottom, Metrics.module)
+            .background(Color.appBackground)
         }
     }
 }
 
 //#Preview {
-//    MyProfileView(onArtAdd: {})
+//    MyProfileView(posts: nil, onAddArt: {})
 //}

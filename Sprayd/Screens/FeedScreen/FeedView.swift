@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct FeaturedView: View {
     @Query(
@@ -130,7 +131,7 @@ struct FeaturedView: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.ClimateCrisisRegular22)
+            .font(.ClimateCrisis22)
             .foregroundStyle(.black)
     }
 
@@ -177,6 +178,7 @@ struct FeaturedView: View {
                 Icons.chevronRight
                     .font(.system(size: 11, weight: .semibold))
                     .padding(.top, 2)
+                    .foregroundStyle(.black.opacity(0.75))
             }
             .frame(maxWidth: .infinity, minHeight: 42, alignment: .topLeading)
         }
@@ -330,20 +332,11 @@ struct FeaturedView: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color.gray.opacity(0.16))
 
-            if let imageURL = item.primaryImageURL {
-                AsyncImage(url: imageURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    default:
-                        Icons.photo
-                            .foregroundStyle(.gray.opacity(0.7))
-                            .font(.system(size: 34, weight: .medium))
-                    }
-                }
+            if let previewImage = previewImage(for: item) {
+                Image(uiImage: previewImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 Icons.photo
                     .foregroundStyle(.gray.opacity(0.7))
@@ -352,6 +345,20 @@ struct FeaturedView: View {
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private func previewImage(for item: ArtItem) -> UIImage? {
+        guard
+            let imageData = item.images
+                .sorted(by: { $0.timeStamp > $1.timeStamp })
+                .first?
+                .img,
+            !imageData.isEmpty
+        else {
+            return nil
+        }
+
+        return UIImage(data: imageData)
     }
 
     private func displayLocation(for item: ArtItem) -> String {
