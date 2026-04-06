@@ -40,7 +40,7 @@ final class MyProfileViewModel: ObservableObject {
         username: String = "Username",
         bio: String = "Description",
         posts: [ArtItem] = [ArtItem(name: "ArtWork1", author: "Author"), ArtItem(name: "ArtWork2", author: "Author")],
-        visited: [ArtItem] = [ArtItem(name: "ArtWork3")],
+        visited: [ArtItem] = [ArtItem(name: "ArtWork3", author: "Author")],
     ) {
         self.selectedOption = selectedOption
         self.username = username
