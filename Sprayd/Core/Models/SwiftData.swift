@@ -8,80 +8,6 @@
 import Foundation
 import SwiftData
 
-@Model
-final class ArtItem {
-    var name: String
-    var itemDescription: String
-    @Relationship(deleteRule: .cascade) var images: [ArtImage]
-    var location: String
-    @Attribute(originalName: "author") var createdBy: String
-    var uploadedBy: String?
-    @Attribute(originalName: "createdAt") var uploadedAt: Date
-    var stateRawValue: String
-    var category: String
-    var likesCount: Int
-
-    init(
-        name: String = "",
-        itemDescription: String = "",
-        images: [ArtImage] = [],
-        location: String = "",
-        createdBy: String = "",
-        uploadedBy: String? = nil,
-        uploadedAt: Date = .now,
-        state: ArtState = .new,
-        category: String = "",
-        likesCount: Int = 0
-    ) {
-        self.name = name
-        self.itemDescription = itemDescription
-        self.images = images
-        self.location = location
-        self.createdBy = createdBy
-        self.uploadedBy = uploadedBy
-        self.uploadedAt = uploadedAt
-        self.stateRawValue = state.rawValue
-        self.category = category
-        self.likesCount = likesCount
-    }
-
-    var state: ArtState {
-        get { ArtState(rawValue: stateRawValue) ?? .new }
-        set { stateRawValue = newValue.rawValue }
-    }
-
-    var resolvedUploadedBy: String {
-        let value = uploadedBy?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return value.isEmpty ? createdBy : value
-    }
-}
-
-@Model
-final class ArtImage {
-    @Attribute(.externalStorage) var img: Data
-    var date: Date
-    var timeStamp: TimeInterval
-    var userId: UUID
-
-    init(
-        img: Data = Data(),
-        date: Date = .now,
-        timeStamp: TimeInterval = Date().timeIntervalSince1970,
-        userId: UUID = UUID()
-    ) {
-        self.img = img
-        self.date = date
-        self.timeStamp = timeStamp
-        self.userId = userId
-    }
-}
-
-enum ArtState: String, Codable, CaseIterable {
-    case new
-    case exists
-    case moderated
-}
-
 enum ArtDataStore {
     enum SharedLoadState {
         case ready
@@ -189,57 +115,72 @@ enum ArtDataStore {
             ArtItem(
                 name: "The Gliders",
                 itemDescription: "A large-scale mural about movement through a dense urban landscape.",
+                images: ["https://picsum.photos/id/1011/600/400"],
                 location: "St. Petersburg",
-                createdBy: "Ana Markov",
+                author: "Ana Markov",
                 uploadedBy: "Loxxych",
                 uploadedAt: referenceDate.addingTimeInterval(-3_600),
                 state: .moderated,
                 category: "Mural",
-                likesCount: 22
+                likesCount: 22,
+                latitude: 59.9343,
+                longitude: 30.3351
             ),
             ArtItem(
                 name: "Screams",
                 itemDescription: "A distressed character study painted on a concrete underpass wall.",
+                images: ["https://picsum.photos/id/1025/600/400"],
                 location: "Moscow",
-                createdBy: "Ana Markov",
+                author: "Ana Markov",
                 uploadedBy: "Egor Maltsev",
                 uploadedAt: referenceDate.addingTimeInterval(-7_200),
                 state: .new,
                 category: "Graffiti",
-                likesCount: 18
+                likesCount: 18,
+                latitude: 55.7558,
+                longitude: 37.6176
             ),
             ArtItem(
                 name: "Bird District",
                 itemDescription: "A colorful neighborhood intervention inspired by local birds and roofs.",
+                images: ["https://picsum.photos/id/1035/600/400"],
                 location: "Kazan",
-                createdBy: "Mira Volnova",
+                author: "Mira Volnova",
                 uploadedBy: "Loxxych",
                 uploadedAt: referenceDate.addingTimeInterval(-10_800),
                 state: .moderated,
                 category: "Street art",
-                likesCount: 14
+                likesCount: 14,
+                latitude: 55.7961,
+                longitude: 49.1064
             ),
             ArtItem(
                 name: "Cube Signal",
                 itemDescription: "Geometric work with a strong contrast palette and industrial rhythm.",
+                images: ["https://picsum.photos/id/1043/600/400"],
                 location: "Yekaterinburg",
-                createdBy: "Mira Volnova",
+                author: "Mira Volnova",
                 uploadedBy: "Ana Markov",
                 uploadedAt: referenceDate.addingTimeInterval(-14_400),
                 state: .exists,
                 category: "Installation",
-                likesCount: 11
+                likesCount: 11,
+                latitude: 56.8389,
+                longitude: 60.6057
             ),
             ArtItem(
                 name: "North Wall",
                 itemDescription: "A weathered mural documented after restoration work in spring.",
+                images: ["https://picsum.photos/id/1050/600/400"],
                 location: "Veliky Novgorod",
-                createdBy: "Egor Maltsev",
+                author: "Egor Maltsev",
                 uploadedBy: "Ana Markov",
                 uploadedAt: referenceDate.addingTimeInterval(-18_000),
                 state: .exists,
                 category: "Mural",
-                likesCount: 9
+                likesCount: 9,
+                latitude: 58.5215,
+                longitude: 31.2755
             )
         ]
     }

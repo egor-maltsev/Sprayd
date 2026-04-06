@@ -10,13 +10,20 @@ import SwiftData
 
 @main
 struct SpraydApp: App {
-    private let modelContainer = ArtDataStore.sharedModelContainer
+    private let sharedModelContainer: ModelContainer
+    private let compositionRoot: CompositionRoot
+
+    init() {
+        let modelContainer = ArtDataStore.sharedModelContainer
+        self.sharedModelContainer = modelContainer
+        self.compositionRoot = CompositionRoot(context: modelContainer.mainContext)
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(compositionRoot: compositionRoot)
                 .tint(.accentRed)
         }
-        .modelContainer(modelContainer)
+        .modelContainer(sharedModelContainer)
     }
 }
