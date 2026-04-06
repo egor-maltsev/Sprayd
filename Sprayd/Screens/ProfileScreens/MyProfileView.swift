@@ -115,9 +115,8 @@ struct MyProfileView: View {
                 .fill(Color.accentRed)
                 .frame(width: Const.logoutButtonSize, height: Const.logoutButtonSize)
                 .overlay {
-                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                    Icons.logOut
                         .font(.system(size: Const.logoutIconPointSize, weight: .semibold))
-                        .foregroundStyle(Color.white)
                 }
                 .shadow(radius: 3)
         }

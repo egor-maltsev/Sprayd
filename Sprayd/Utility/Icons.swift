@@ -83,4 +83,27 @@ struct Icons {
     static var leftArrow: some View {
         Image("leftArrowIcon")
     }
+    
+    static var map: some View {
+        Image("mapIcon")
+            .renderingMode(.template)
+            .foregroundColor(.accentRed)
+    }
+    
+    static var home: some View {
+        Image("homeIcon")
+            .renderingMode(.template)
+            .foregroundColor(.accentRed)
+    }
+    
+    static var profileIcon: some View {
+        Image("profileIcon")
+            .renderingMode(.template)
+            .foregroundColor(.accentRed)
+    }
+    
+    static var logOut: some View {
+        Image(systemName: "rectangle.portrait.and.arrow.right")
+            .foregroundStyle(Color.white)
+    }
 }
