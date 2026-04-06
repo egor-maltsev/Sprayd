@@ -10,14 +10,14 @@ import SwiftData
 
 @Model
 final class ArtImage {
-    @Attribute(.externalStorage) var img: Data
     var urlString: String
-    var date: Date
-    var timeStamp: TimeInterval
-    var userId: UUID
+    @Transient var img: Data? = nil
+    @Transient var date: Date = .now
+    @Transient var timeStamp: TimeInterval = Date().timeIntervalSince1970
+    @Transient var userId: UUID = UUID()
 
     init(
-        img: Data = Data(),
+        img: Data? = nil,
         urlString: String = "",
         date: Date = .now,
         timeStamp: TimeInterval = Date().timeIntervalSince1970,
