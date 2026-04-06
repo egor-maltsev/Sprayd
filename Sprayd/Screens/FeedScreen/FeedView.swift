@@ -131,7 +131,7 @@ struct FeaturedView: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.ClimateCrisisRegular22)
+            .font(.ClimateCrisis22)
             .foregroundStyle(.black)
     }
 
@@ -178,6 +178,7 @@ struct FeaturedView: View {
                 Icons.chevronRight
                     .font(.system(size: 11, weight: .semibold))
                     .padding(.top, 2)
+                    .foregroundStyle(.black.opacity(0.75))
             }
             .frame(maxWidth: .infinity, minHeight: 42, alignment: .topLeading)
         }

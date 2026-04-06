@@ -20,25 +20,19 @@ struct AppCoordinatorView: View {
         TabView(selection: $coordinator.selectedTab) {
             MapCoordinatorView(coordinator: coordinator.mapCoordinator)
                 .tabItem {
-                    Image("mapIcon")
-                        .renderingMode(.template)
-                        .foregroundColor(.accentRed)
+                    Icons.map
                 }
                 .tag(AppTab.map)
             
             FeedCoordinatorView(coordinator: coordinator.feedCoordinator)
                 .tabItem {
-                    Image("homeIcon")
-                        .renderingMode(.template)
-                        .foregroundColor(.accentRed)
+                    Icons.map
                 }
                 .tag(AppTab.feed)
             
             ProfileCoordinatorView(coordinator: coordinator.profileCoordinator)
                 .tabItem {
-                    Image("profileIcon")
-                        .renderingMode(.template)
-                        .foregroundColor(.accentRed)
+                    Icons.profileIcon
                 }
                 .tag(AppTab.profile)
         }
