@@ -89,11 +89,22 @@ enum ArtDataStore {
     }
 
     static private(set) var sharedLoadState: SharedLoadState = .ready
-    static let sharedModelContainer = makeModelContainer(trackSharedLoadState: true)
+    static let sharedModelContainer = makeModelContainer(
+        seedSampleData: shouldSeedSharedData,
+        trackSharedLoadState: true
+    )
     static let previewModelContainer = makeModelContainer(
         inMemoryOnly: true,
         seedSampleData: true
     )
+
+    private static var shouldSeedSharedData: Bool {
+        #if DEBUG
+        true
+        #else
+        false
+        #endif
+    }
 
     static func makeModelContainer(
         inMemoryOnly: Bool = false,
@@ -137,7 +148,7 @@ enum ArtDataStore {
                 return try makeContainer(
                     schema: schema,
                     configuration: fallbackConfiguration,
-                    seedSampleData: false
+                    seedSampleData: seedSampleData
                 )
             } catch {
                 fatalError("Failed to create fallback in-memory container: \(error)")
