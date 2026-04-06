@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct ArtAdditionView: View {
     // MARK: - Constants
@@ -31,8 +32,8 @@ struct ArtAdditionView: View {
         static let titleFieldPlaceholder: String = "Add a title*"
         static let descriptionFieldTitle: String = "Description"
         static let descriptionFieldPlaceholder: String = "Add a description*"
-        static let addressFieldTitle: String = "Address"
-        static let addressFieldPlaceholder: String = "Add an address*"
+        static let locationSectionTitle: String = "Location"
+        static let addLocationButtonText: String = "Add location"
         static let addPictureText: String = "Add a picture*"
         
         // Fonts
@@ -44,7 +45,9 @@ struct ArtAdditionView: View {
     
     @State private var title: String = ""
     @State private var description: String = ""
-    @State private var address: String = "The UK, St. Andrew’s, New Avenue st. 22"
+    @State private var selectedCoordinate: CLLocationCoordinate2D?
+    @State private var selectedLocationName: String?
+    @State private var isLocationPickerPresented = false
     @State private var selectedAuthor: Author? = Author(name: "Ana Markov")
     @State private var selectedCategory: Category? = Category(name: "Sponsored by government")
     
@@ -55,7 +58,6 @@ struct ArtAdditionView: View {
         addedPhotos: [ArtImage] = [],
         title: String = "",
         description: String = "",
-        address: String = "",
         selectedAuthor: Author? = nil,
         selectedCategory: Category? = nil,
         onBackButtonTapped: @escaping () -> Void
@@ -63,7 +65,6 @@ struct ArtAdditionView: View {
             self.addedPhotos = addedPhotos
             self.title = title
             self.description = description
-            self.address = address
             self.selectedAuthor = selectedAuthor
             self.selectedCategory = selectedCategory
             self.onBackButtonTapped = onBackButtonTapped
@@ -93,19 +94,11 @@ struct ArtAdditionView: View {
                         axis: .vertical,
                         title: Const.descriptionFieldTitle,
                         placeholder: Const.descriptionFieldPlaceholder,
-                        text: $title
+                        text: $description
                     )
                     
                     authorSection
-                    
-                    OutlinedInputField(
-                        minHeight: Const.narrowInputFieldHeight,
-                        axis: .horizontal,
-                        title: Const.addressFieldTitle,
-                        placeholder: Const.addressFieldPlaceholder,
-                        text: $address
-                    )
-                    
+                    locationSection
                     categorySection
                     createButton
                         .padding(.top, Metrics.tripleModule)
@@ -118,6 +111,12 @@ struct ArtAdditionView: View {
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
+        .sheet(isPresented: $isLocationPickerPresented) {
+            LocationPickerView { picked in
+                selectedCoordinate = picked.coordinate
+                selectedLocationName = picked.displayName
+            }
+        }
     }
     
     // MARK: - Subviews
@@ -203,6 +202,42 @@ struct ArtAdditionView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
+    private var locationSection: some View {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
+            Text(Const.locationSectionTitle)
+                .font(.InstrumentMedium18)
+                .foregroundStyle(Color.black)
+            
+            if let selectedCoordinate {
+                HStack(alignment: .top, spacing: Metrics.halfModule) {
+                    Icons.location
+                        .foregroundStyle(Color.secondaryColor)
+                    
+                    VStack(alignment: .leading, spacing: Metrics.halfModule) {
+                        let coordText = Self.formatCoordinate(selectedCoordinate)
+                        if let selectedLocationName {
+                            Text(selectedLocationName)
+                                .font(.InstrumentMedium16)
+                                .foregroundStyle(Color.black)
+                        }
+                        if selectedLocationName != coordText {
+                            Text(coordText)
+                                .font(.InstrumentRegular13)
+                                .foregroundStyle(Color.secondaryColor)
+                        }
+                    }
+                }
+            }
+            
+            BlackSelectCapsuleButton(
+                title: Const.addLocationButtonText
+            ) {
+                isLocationPickerPresented = true
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
     var categorySection: some View {
         VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text(Const.categoryText)
@@ -250,6 +285,10 @@ struct ArtAdditionView: View {
         RoundedRectangle(cornerRadius: Const.photoItemCornerRadius)
             .fill(Color.placeholderGrey)
             .frame(width: Const.photoItemWidth, height: Const.photoItemHeight)
+    }
+    
+    private static func formatCoordinate(_ coordinate: CLLocationCoordinate2D) -> String {
+        String(format: "%.4f, %.4f", coordinate.latitude, coordinate.longitude)
     }
 }
 
