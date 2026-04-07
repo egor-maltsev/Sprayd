@@ -36,3 +36,15 @@ extension Color {
     
     static let gradientEdgeColor = Color(red: 1, green: 0.33, blue: 0.29)
 }
+
+extension RadialGradient {
+    static let onboardingBackground = RadialGradient(
+        gradient: Gradient(colors: [
+            .gradientCenterColor,
+            .gradientEdgeColor
+        ]),
+        center: .center,
+        startRadius: 0,
+        endRadius: 400
+    )
+}
