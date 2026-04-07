@@ -28,7 +28,7 @@ final class Sender {
         method: HTTPMethod,
         headers: [String: String]? = nil,
         body: Data? = nil
-    ) async throws -> SuccessResponse<T> {
+    ) async throws -> T {
         guard let url = URL(string: "\(baseURL)\(endpoint)") else {
             throw APIError.invalidURL
         }
@@ -53,22 +53,30 @@ final class Sender {
         headers: [String: String]?,
         body: Data?,
         attempt: Int
-    ) async throws -> SuccessResponse<T> {
+    ) async throws -> T {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             guard let http = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
             }
-            return try await handleResponse(
-                http,
-                data: data,
-                request: request,
-                endpoint: endpoint,
-                method: method,
-                headers: headers,
-                body: body,
-                attempt: attempt
-            )
+
+            if (500...599).contains(http.statusCode) {
+                if attempt < delays.count {
+                    try await Task.sleep(nanoseconds: UInt64(delays[attempt] * 1_000_000_000))
+                    return try await sendWithRetry(
+                        request: request,
+                        endpoint: endpoint,
+                        method: method,
+                        headers: headers,
+                        body: body,
+                        attempt: attempt + 1
+                    )
+                } else {
+                    throw try decodeErrorResponse(data)
+                }
+            }
+
+            return try handleResponse(http, data: data)
         } catch {
             // Retry only transport-level failures.
             guard error is URLError else {
@@ -90,52 +98,27 @@ final class Sender {
         }
     }
     
-    private func handleResponse<T: Codable>(
-        _ response: HTTPURLResponse,
-        data: Data,
-        request: URLRequest,
-        endpoint: String,
-        method: HTTPMethod,
-        headers: [String: String]?,
-        body: Data?,
-        attempt: Int
-    ) async throws -> SuccessResponse<T> {
+    private func handleResponse<T: Codable>(_ response: HTTPURLResponse, data: Data) throws -> T {
         switch response.statusCode {
         case 200...299:
             return try decodeResponse(data)
         case 401:
             // TODO: refresh logic
             throw try decodeErrorResponse(data)
-        case 500...599:
-            if attempt < delays.count {
-                try await Task.sleep(nanoseconds: UInt64(delays[attempt] * 1_000_000_000))
-                return try await sendWithRetry(
-                    request: request,
-                    endpoint: endpoint,
-                    method: method,
-                    headers: headers,
-                    body: body,
-                    attempt: attempt + 1
-                )
-            } else {
-                throw try decodeErrorResponse(data)
-            }
         default:
             throw try decodeErrorResponse(data)
         }
     }
     
-    private func decodeResponse<T: Codable>(_ data: Data) throws -> SuccessResponse<T> {
+    private func decodeResponse<T: Codable>(_ data: Data) throws -> T {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         do {
-            // Preferred backend format: { "data": ... }
-            return try decoder.decode(SuccessResponse<T>.self, from: data)
+            let wrapped = try decoder.decode(SuccessResponse<T>.self, from: data)
+            return wrapped.data
         } catch {
-            // Fallback for endpoints that return raw payload, e.g. [ ... ].
             do {
-                let raw = try decoder.decode(T.self, from: data)
-                return SuccessResponse(data: raw)
+                return try decoder.decode(T.self, from: data)
             } catch {
                 throw APIError.decodingError(error)
             }

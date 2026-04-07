@@ -16,7 +16,6 @@ struct SuccessResponse<T: Codable>: Codable {
 struct APIErrorResponse: Codable, Error {
     let errorType: String
     let errorMessage: String
-    let errorDetails: [ErrorDetail]?
 }
 
 struct ErrorDetail: Codable {
