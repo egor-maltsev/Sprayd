@@ -40,15 +40,25 @@ struct ArtMediumCardView: View {
     
     // MARK: - Subviews
     private var artworkImage: some View {
-        RoundedRectangle(cornerRadius: Const.imageCornerRadius)
-            .fill(Const.placeholderColor)
-            .frame(maxWidth: .infinity)
-            .frame(height: Const.imageHeight)
-            .overlay {
-                Icons.photo
-                    .font(.system(size: 34, weight: .regular))
-                    .foregroundStyle(Color.secondaryColor)
+        CachedAsyncImage(url: item.primaryImageURL) { phase in
+            switch phase {
+            case .success(let image):
+                image
+                    .resizable()
+                    .scaledToFill()
+            case .empty, .failure:
+                RoundedRectangle(cornerRadius: Const.imageCornerRadius)
+                    .fill(Const.placeholderColor)
+                    .overlay {
+                        Icons.photo
+                            .font(.system(size: 34, weight: .regular))
+                            .foregroundStyle(Color.secondaryColor)
+                    }
             }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: Const.imageHeight)
+        .clipShape(RoundedRectangle(cornerRadius: Const.imageCornerRadius))
     }
     
     private var titleRow: some View {

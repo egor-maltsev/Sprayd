@@ -15,10 +15,8 @@ final class ArtItemAnnotationView: MKAnnotationView {
     static let clusteringIdentifier = "art-item"
 
     private let containerView = UIView()
-    private let imageView = UIImageView()
     private let countLabel = UILabel()
-    private var imageTask: Task<Void, Never>?
-    private var representedImageURLString: String?
+    private let hostedImageController = UIHostingController(rootView: AnyView(EmptyView()))
     
     // MARK: Lifecycle
 
@@ -33,12 +31,9 @@ final class ArtItemAnnotationView: MKAnnotationView {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageTask?.cancel()
-        imageTask = nil
-        representedImageURLString = nil
-        imageView.image = placeholderImage()
         countLabel.isHidden = true
         countLabel.text = nil
+        hostedImageController.rootView = makeHostedImage(url: nil, imageLoaderService: nil)
         setNeedsLayout()
     }
 
@@ -65,7 +60,7 @@ final class ArtItemAnnotationView: MKAnnotationView {
             )
         )
         containerView.frame = bounds
-        imageView.frame = containerView.bounds
+        hostedImageController.view.frame = containerView.bounds
 
         let labelWidth = max(
             Metrics.tripleModule,
@@ -83,11 +78,8 @@ final class ArtItemAnnotationView: MKAnnotationView {
 
     func configure(
         annotation: any MKAnnotation,
-        imageProvider: ((String) async -> Data?)?
+        imageLoaderService: ImageLoaderService?
     ) {
-        imageTask?.cancel()
-        imageView.image = placeholderImage()
-
         if let clusterAnnotation = annotation as? MKClusterAnnotation {
             countLabel.isHidden = false
             countLabel.text = "\(clusterAnnotation.memberAnnotations.count)"
@@ -107,30 +99,10 @@ final class ArtItemAnnotationView: MKAnnotationView {
             imageURL = (annotation as? ArtItemAnnotation)?.imageURL
         }
 
-        representedImageURLString = imageURL?.absoluteString
-
-        guard
-            let imageProvider,
-            let urlString = imageURL?.absoluteString
-        else {
-            return
-        }
-
-        imageTask = Task { @MainActor [weak self] in
-            guard
-                let data = await imageProvider(urlString),
-                let image = UIImage(data: data),
-                !Task.isCancelled
-            else {
-                return
-            }
-
-            guard self?.representedImageURLString == urlString else {
-                return
-            }
-
-            self?.imageView.image = image
-        }
+        hostedImageController.rootView = makeHostedImage(
+            url: imageURL,
+            imageLoaderService: imageLoaderService
+        )
     }
 
     private func setupView() {
@@ -153,10 +125,9 @@ final class ArtItemAnnotationView: MKAnnotationView {
         containerView.layer.borderWidth = Metrics.halfModule
         containerView.layer.borderColor = UIColor(Color.appBackground).cgColor
 
-        imageView.frame = containerView.bounds
-        imageView.contentMode = .scaleAspectFill
-        imageView.tintColor = UIColor(Color.placeholderGrey)
-        imageView.image = placeholderImage()
+        hostedImageController.view.frame = containerView.bounds
+        hostedImageController.view.backgroundColor = .clear
+        hostedImageController.view.isUserInteractionEnabled = false
 
         countLabel.font = .InstrumentBold13
         countLabel.textColor = UIColor(Color.appBackground)
@@ -167,16 +138,31 @@ final class ArtItemAnnotationView: MKAnnotationView {
         countLabel.isHidden = true
 
         addSubview(containerView)
-        containerView.addSubview(imageView)
+        containerView.addSubview(hostedImageController.view)
         addSubview(countLabel)
     }
 
-    private func placeholderImage() -> UIImage? {
-        let configuration = UIImage.SymbolConfiguration(
-            pointSize: Metrics.doubleModule,
-            weight: .medium
+    private func makeHostedImage(
+        url: URL?,
+        imageLoaderService: ImageLoaderService?
+    ) -> AnyView {
+        AnyView(
+            CachedAsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .empty, .failure:
+                    ZStack {
+                        Color.appBackground
+                        Image(systemName: "photo")
+                            .font(.system(size: Metrics.doubleModule, weight: .medium))
+                            .foregroundStyle(Color.placeholderGrey)
+                    }
+                }
+            }
+            .imageLoaderService(imageLoaderService)
         )
-        return UIImage(systemName: "photo", withConfiguration: configuration)?
-            .withTintColor(UIColor(Color.placeholderGrey), renderingMode: .alwaysOriginal)
     }
 }

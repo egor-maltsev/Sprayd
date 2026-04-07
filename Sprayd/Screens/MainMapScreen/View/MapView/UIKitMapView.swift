@@ -12,8 +12,9 @@ struct UIKitMapView: UIViewRepresentable {
     let region: MKCoordinateRegion
     let items: [ArtItem]
     let isItemSheetPresented: Bool
-    let imageProvider: (String) async -> Data?
     let onSelectItem: (ArtItem) -> Void
+
+    @Environment(\.imageLoaderService) private var imageLoaderService
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -32,17 +33,14 @@ struct UIKitMapView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        context.coordinator.imageProvider = imageProvider
+        context.coordinator.imageLoaderService = imageLoaderService
         context.coordinator.onSelectItem = onSelectItem
         updateAnnotations(for: uiView)
         updateSelection(for: uiView)
     }
 
     func makeCoordinator() -> UIKitMapCoordinator {
-        UIKitMapCoordinator(
-            imageProvider: imageProvider,
-            onSelectItem: onSelectItem
-        )
+        UIKitMapCoordinator(onSelectItem: onSelectItem)
     }
 
     private func updateAnnotations(for mapView: MKMapView) {
@@ -94,14 +92,10 @@ struct UIKitMapView: UIViewRepresentable {
 
 // Так как используется только в MapView объявляем здесь
 final class UIKitMapCoordinator: NSObject, MKMapViewDelegate {
-    var imageProvider: (String) async -> Data?
+    var imageLoaderService: ImageLoaderService?
     var onSelectItem: (ArtItem) -> Void
 
-    init(
-        imageProvider: @escaping (String) async -> Data?,
-        onSelectItem: @escaping (ArtItem) -> Void
-    ) {
-        self.imageProvider = imageProvider
+    init(onSelectItem: @escaping (ArtItem) -> Void) {
         self.onSelectItem = onSelectItem
     }
 
@@ -119,7 +113,7 @@ final class UIKitMapCoordinator: NSObject, MKMapViewDelegate {
             view.clusteringIdentifier = nil
             view.configure(
                 annotation: clusterAnnotation,
-                imageProvider: imageProvider
+                imageLoaderService: imageLoaderService
             )
             return view
         }
@@ -133,7 +127,7 @@ final class UIKitMapCoordinator: NSObject, MKMapViewDelegate {
             view.clusteringIdentifier = ArtItemAnnotationView.clusteringIdentifier
             view.configure(
                 annotation: artAnnotation,
-                imageProvider: imageProvider
+                imageLoaderService: imageLoaderService
             )
             return view
         }

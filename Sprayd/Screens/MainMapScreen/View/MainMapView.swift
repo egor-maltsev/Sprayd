@@ -21,9 +21,6 @@ struct MainMapView: View {
             region: viewModel.region,
             items: viewModel.items,
             isItemSheetPresented: selectedItem != nil,
-            imageProvider: { urlString in
-                await viewModel.imageData(for: urlString)
-            },
             onSelectItem: { item in
                 selectedDetent = .fraction(0.5)
                 selectedItem = item
@@ -47,6 +44,7 @@ struct MainMapView: View {
                         selection: $selectedDetent
                     )
                     .presentationDragIndicator(.visible)
+                    .scrollDisabled(true)
             }
         }
     }
