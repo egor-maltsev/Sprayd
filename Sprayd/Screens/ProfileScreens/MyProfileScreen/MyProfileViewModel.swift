@@ -33,7 +33,6 @@ final class MyProfileViewModel: ObservableObject {
     @Published var posts: [ArtItem]
     @Published var visited: [ArtItem]
     @Published var profileImage: UIImage?
-    
     @Published var isImageSourceDialogPresented: Bool = false
     @Published var activeImagePickerSource: ProfileImageSource?
     @Published var isPermissionAlertPresented: Bool = false
