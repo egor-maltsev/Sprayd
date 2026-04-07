@@ -10,7 +10,6 @@ import SwiftUI
 struct OnboardingView: View {
     // MARK: - Constants
     private enum Const {
-        static let gradientRadius: CGFloat = 400
         static let animationDuration: CGFloat = 0.45
     }
 
@@ -19,24 +18,22 @@ struct OnboardingView: View {
         case chooseAccount
     }
 
+    enum Route: Hashable {
+        case signIn
+        case createAccount
+    }
+
     // MARK: - Fields
     @State private var step: Step = .welcome
+    @State private var path: [Route] = []
 
     var onFinished: () -> Void = {}
 
     // MARK: - Body
     var body: some View {
         ZStack {
-            RadialGradient(
-                gradient: Gradient(colors: [
-                    .gradientCenterColor,
-                    .gradientEdgeColor
-                ]),
-                center: .center,
-                startRadius: 0,
-                endRadius: Const.gradientRadius
-            )
-            .ignoresSafeArea()
+            RadialGradient.onboardingBackground
+                .ignoresSafeArea()
 
             Group {
                 switch step {
@@ -49,19 +46,34 @@ struct OnboardingView: View {
                     .transition(.opacity)
 
                 case .chooseAccount:
-                    ChooseAccountView(
-                        onSignInTapped: {
-                            // TODO: navigate to sign in
-                        },
-                        onCreateAccountTapped: {
-                            // TODO: navigate to create account
-                        },
-                        onProceedWithoutAccountTapped: {
-                            withAnimation {
-                                onFinished()
+                    NavigationStack(path: $path) {
+                        ChooseAccountView(
+                            onSignInTapped: {
+                                path.append(.signIn)
+                            },
+                            onCreateAccountTapped: {
+                                path.append(.createAccount)
+                            },
+                            onProceedWithoutAccountTapped: {
+                                withAnimation {
+                                    onFinished()
+                                }
+                            }
+                        )
+                        .navigationDestination(for: Route.self) { route in
+                            switch route {
+                            case .signIn:
+                                SignInView(onContinueTapped: {
+                                    // TODO: sign in action
+                                })
+                            case .createAccount:
+                                CreateAccountView(onContinueTapped: {
+                                    // TODO: create account action
+                                })
                             }
                         }
-                    )
+                    }
+                    .toolbar(.hidden, for: .navigationBar)
                     .transition(.opacity)
                 }
             }

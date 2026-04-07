@@ -30,32 +30,37 @@ struct ChooseAccountView: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-
-            Text(Const.titleText)
-                .font(.ClimateCrisis52)
-                .foregroundStyle(.black)
-                .padding(.top, Const.titleTopInset)
-
-            Spacer()
-                .frame(maxHeight: Metrics.quadrupleModule)
-
-            authSection
-
+        ZStack {
+            RadialGradient.onboardingBackground
+                .ignoresSafeArea()
+            
             VStack(spacing: 0) {
-                Spacer(minLength: 0)
-                Text(Const.orText)
-                    .font(.InstrumentRegular16)
-                    .foregroundStyle(.black.opacity(0.5))
-                Spacer(minLength: 0)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Spacer()
 
-            proceedButton
-                .padding(.bottom, Metrics.quadrupleModule)
+                Text(Const.titleText)
+                    .font(.ClimateCrisis52)
+                    .foregroundStyle(.black)
+                    .padding(.top, Const.titleTopInset)
+
+                Spacer()
+                    .frame(maxHeight: Metrics.quadrupleModule)
+
+                authSection
+
+                VStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    Text(Const.orText)
+                        .font(.InstrumentRegular16)
+                        .foregroundStyle(.black.opacity(0.5))
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                proceedButton
+                    .padding(.bottom, Metrics.quadrupleModule)
+            }
+            .padding(.horizontal, Metrics.tripleModule)
         }
-        .padding(.horizontal, Metrics.tripleModule)
     }
 
     // MARK: - Subviews
@@ -126,19 +131,9 @@ struct ChooseAccountView: View {
 
 // MARK: - Preview
 #Preview {
-    ZStack {
-        RadialGradient(
-            gradient: Gradient(colors: [.gradientCenterColor, .gradientEdgeColor]),
-            center: .center,
-            startRadius: 0,
-            endRadius: 400
-        )
-        .ignoresSafeArea()
-
-        ChooseAccountView(
-            onSignInTapped: {},
-            onCreateAccountTapped: {},
-            onProceedWithoutAccountTapped: {}
-        )
-    }
+    ChooseAccountView(
+        onSignInTapped: {},
+        onCreateAccountTapped: {},
+        onProceedWithoutAccountTapped: {}
+    )
 }
