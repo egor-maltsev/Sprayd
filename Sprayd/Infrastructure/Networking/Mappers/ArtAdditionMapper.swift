@@ -24,7 +24,7 @@ enum ArtAdditionMapper {
             id: response.id ?? UUID(),
             name: response.name,
             itemDescription: response.itemDescription,
-            storedImages: images,
+            images: images,
             location: response.location,
             author: response.author,
             state: ArtState(rawValue: response.state) ?? .new,
