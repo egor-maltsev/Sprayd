@@ -14,8 +14,12 @@ final class CompositionRoot {
     init(context: ModelContext) {
         self.modelContext = context
     }
+
+    lazy var imageCacheService: ImageCacheService = {
+        ImageCacheService()
+    }()
     
     lazy var imageLoaderService: ImageLoaderService = {
-        ImageLoaderService(modelContext: modelContext)
+        ImageLoaderService(imageCacheService: imageCacheService)
     }()
 }
