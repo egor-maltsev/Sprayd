@@ -9,11 +9,13 @@ import SwiftUI
 
 struct CreateAccountAssembly {
     let authorizationService: AuthorizationService
+    let tokenStore: SessionTokenStoring
 
     func build(onRegistrationSuccess: @escaping () -> Void) -> some View {
         CreateAccountScreen(
             viewModel: CreateAccountViewModel(
                 authorizationService: authorizationService,
+                tokenStore: tokenStore,
                 onRegistrationSuccess: onRegistrationSuccess
             )
         )

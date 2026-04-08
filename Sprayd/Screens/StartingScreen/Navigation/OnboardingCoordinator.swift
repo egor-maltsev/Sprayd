@@ -23,14 +23,17 @@ final class OnboardingCoordinator: ObservableObject {
     @Published var path: [OnboardingRoute] = []
 
     private let authorizationService: AuthorizationService
+    private let tokenStore: SessionTokenStoring
     private let onFinished: () -> Void
 
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
+        tokenStore: SessionTokenStoring,
         onFinished: @escaping () -> Void = {}
     ) {
         self.authorizationService = authorizationService
+        self.tokenStore = tokenStore
         self.onFinished = onFinished
     }
 
@@ -85,10 +88,16 @@ final class OnboardingCoordinator: ObservableObject {
     func destination(for route: OnboardingRoute) -> some View {
         switch route {
         case .signIn:
-            SignInAssembly(authorizationService: authorizationService)
+            SignInAssembly(
+                authorizationService: authorizationService,
+                tokenStore: tokenStore
+            )
                 .build(onLoginSuccess: finishOnboarding)
         case .createAccount:
-            CreateAccountAssembly(authorizationService: authorizationService)
+            CreateAccountAssembly(
+                authorizationService: authorizationService,
+                tokenStore: tokenStore
+            )
                 .build(onRegistrationSuccess: finishOnboarding)
         }
     }

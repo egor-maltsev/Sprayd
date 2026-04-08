@@ -43,6 +43,7 @@ final class MyProfileViewModel: ObservableObject {
     @Published var isEditingBio: Bool = false
 
     private let authorizationService: AuthorizationService
+    private let tokenStore: SessionTokenStoring
 
     var selectedOptionTitle: String {
         selectedOption.rawValue
@@ -59,6 +60,7 @@ final class MyProfileViewModel: ObservableObject {
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
+        tokenStore: SessionTokenStoring = SessionTokenStore(),
         selectedOption: Option = .posted,
         username: String = "Username",
         bio: String = "Description",
@@ -66,6 +68,7 @@ final class MyProfileViewModel: ObservableObject {
         visited: [ArtItem] = [ArtItem(name: "ArtWork3", author: "Author")]
     ) {
         self.authorizationService = authorizationService
+        self.tokenStore = tokenStore
         self.selectedOption = selectedOption
         self.username = username
         self.bio = bio
@@ -86,7 +89,7 @@ final class MyProfileViewModel: ObservableObject {
 
         Task {
             do {
-                let token = UserDefaults.standard.string(forKey: "userToken") ?? ""
+                let token = tokenStore.token() ?? ""
                 try await authorizationService.logout(token: token)
                 clearSession()
             } catch {
@@ -100,7 +103,7 @@ final class MyProfileViewModel: ObservableObject {
     private func clearSession() {
         UserDefaults.standard.removeObject(forKey: "userId")
         UserDefaults.standard.removeObject(forKey: "userEmail")
-        UserDefaults.standard.removeObject(forKey: "userToken")
+        _ = tokenStore.clearToken()
         withAnimation(.easeInOut(duration: 0.35)) {
             isLoggedIn = false
             hasCompletedOnboarding = false
