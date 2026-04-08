@@ -15,7 +15,6 @@ struct ArtAdditionView: View {
         static let photoItemHeight: CGFloat = 136
         static let photoItemWidth: CGFloat = 127
         static let photoItemCornerRadius: CGFloat = 30
-        static let authorAvatarSize: CGFloat = 42
         static let createButtonHeight: CGFloat = 48
         static let createButtonCornerRadius: CGFloat = 24
         static let narrowInputFieldHeight: CGFloat = 44
@@ -101,6 +100,11 @@ struct ArtAdditionView: View {
                 viewModel.selectedLocationName = picked.displayName
             }
         }
+        .sheet(isPresented: $viewModel.isAuthorPickerPresented) {
+            AuthorPickerView(authors: viewModel.availableAuthors) { author in
+                viewModel.selectedAuthor = author
+            }
+        }
     }
     
     // MARK: - Subviews
@@ -162,25 +166,13 @@ struct ArtAdditionView: View {
                 .foregroundStyle(Color.black)
             
             if let selectedAuthor = viewModel.selectedAuthor {
-                HStack(spacing: Metrics.oneAndHalfModule) {
-                    Circle()
-                        .fill(Color.gray.opacity(0.45))
-                        .frame(width: Const.authorAvatarSize, height: Const.authorAvatarSize)
-                        .overlay {
-                            Icons.person
-                                .foregroundStyle(Color.white.opacity(0.9))
-                        }
-                    
-                    Text(selectedAuthor.name)
-                        .font(.InstrumentMedium18)
-                        .foregroundStyle(Color.black)
-                }
+                MiniProfileView(name: selectedAuthor.name)
             }
             
             BlackSelectCapsuleButton(
                 title: Const.selectAuthButtonText
             ) {
-                // TODO: open author picker
+                viewModel.isAuthorPickerPresented = true
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
