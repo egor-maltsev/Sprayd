@@ -100,5 +100,9 @@ struct OnboardingView: View {
 
 // MARK: - Preview
 #Preview {
-    OnboardingView(authorizationService: try! AuthorizationService(sender: Sender()))
+    if let sender = try? Sender() {
+        OnboardingView(authorizationService: AuthorizationService(sender: sender))
+    } else {
+        Text("Failed to initialize preview")
+    }
 }

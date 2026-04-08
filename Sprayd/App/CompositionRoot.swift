@@ -20,7 +20,11 @@ final class CompositionRoot {
     }()
 
     lazy var sender: Sender = {
-        try! Sender()
+        do {
+            return try Sender()
+        } catch {
+            fatalError("Failed to initialize Sender: \(error)")
+        }
     }()
 
     lazy var authorizationService: AuthorizationService = {

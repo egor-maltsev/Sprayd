@@ -149,9 +149,13 @@ struct CreateAccountView: View {
 
 // MARK: - Preview
 #Preview {
-    CreateAccountView(
-        viewModel: CreateAccountViewModel(
-            authorizationService: try! AuthorizationService(sender: Sender())
+    if let sender = try? Sender() {
+        CreateAccountView(
+            viewModel: CreateAccountViewModel(
+                authorizationService: AuthorizationService(sender: sender)
+            )
         )
-    )
+    } else {
+        Text("Failed to initialize preview")
+    }
 }
