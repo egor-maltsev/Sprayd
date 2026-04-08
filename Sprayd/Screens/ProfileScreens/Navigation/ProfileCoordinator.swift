@@ -13,13 +13,16 @@ final class ProfileCoordinator: ObservableObject {
     @Published var path: [ProfileRoute] = []
     private let artAdditionRepository: ArtAdditionRepository
     private let authorizationService: AuthorizationService
+    private let tokenStore: SessionTokenStoring
 
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
+        tokenStore: SessionTokenStoring,
         artAdditionRepository: ArtAdditionRepository
     ) {
         self.authorizationService = authorizationService
+        self.tokenStore = tokenStore
         self.artAdditionRepository = artAdditionRepository
     }
     // MARK: - Navigation logic
@@ -42,7 +45,10 @@ final class ProfileCoordinator: ObservableObject {
             onAddArt: { [weak self] in
                 self?.openAddArt()
             },
-            viewModel: MyProfileViewModel(authorizationService: authorizationService)
+            viewModel: MyProfileViewModel(
+                authorizationService: authorizationService,
+                tokenStore: tokenStore
+            )
         )
     }
     

@@ -9,11 +9,13 @@ import SwiftUI
 
 struct SignInAssembly {
     let authorizationService: AuthorizationService
+    let tokenStore: SessionTokenStoring
 
     func build(onLoginSuccess: @escaping () -> Void) -> some View {
         SignInScreen(
             viewModel: SignInViewModel(
                 authorizationService: authorizationService,
+                tokenStore: tokenStore,
                 onLoginSuccess: onLoginSuccess
             )
         )

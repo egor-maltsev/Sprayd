@@ -39,4 +39,8 @@ final class CompositionRoot {
             modelContext: modelContext
         )
     }()
+
+    lazy var sessionTokenStore: SessionTokenStoring = {
+        SessionTokenStore()
+    }()
 }
