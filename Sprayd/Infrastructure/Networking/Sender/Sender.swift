@@ -16,10 +16,7 @@ final class Sender {
     private let baseURL: String
     private let delays: [TimeInterval] = [1, 3, 10]
     
-    init(baseURL: String = Constants.baseURL) throws {
-        guard !baseURL.isEmpty else {
-            throw APIError.invalidURL
-        }
+    init(baseURL: String = Constants.baseURL) {
         self.baseURL = baseURL
     }
     

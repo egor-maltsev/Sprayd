@@ -19,14 +19,7 @@ final class CompositionRoot {
         ImageLoaderService(modelContext: modelContext)
     }()
 
-    lazy var sender: Sender = {
-        do {
-            return try Sender()
-        } catch {
-            fatalError("Failed to initialize Sender: \(error)")
-        }
-    }()
-
+    lazy var sender: Sender = Sender()
     lazy var authorizationService: AuthorizationService = {
         AuthorizationService(sender: sender)
     }()
