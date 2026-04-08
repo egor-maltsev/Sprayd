@@ -5,7 +5,6 @@
 //  Created by User on 08.04.2026.
 //
 
-import CryptoKit
 import Foundation
 
 actor ImageCacheService {
@@ -133,9 +132,7 @@ actor ImageCacheService {
     }
 
     private func fileURL(for url: URL) -> URL {
-        let fileName = SHA256.hash(data: Data(url.absoluteString.utf8))
-            .map { String(format: "%02x", $0) }
-            .joined()
+        let fileName = Data(url.absoluteString.utf8).base64EncodedString()
 
         return cacheDirectoryURL.appendingPathComponent(fileName, isDirectory: false)
     }
