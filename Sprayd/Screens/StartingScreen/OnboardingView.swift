@@ -12,11 +12,13 @@ struct OnboardingView: View {
 
     init(
         authorizationService: AuthorizationService,
+        tokenStore: SessionTokenStoring,
         onFinished: @escaping () -> Void = {}
     ) {
         _coordinator = StateObject(
             wrappedValue: OnboardingCoordinator(
                 authorizationService: authorizationService,
+                tokenStore: tokenStore,
                 onFinished: onFinished
             )
         )
@@ -24,14 +26,5 @@ struct OnboardingView: View {
 
     var body: some View {
         OnboardingCoordinatorView(coordinator: coordinator)
-    }
-}
-
-// MARK: - Preview
-#Preview {
-    if let sender = try? Sender() {
-        OnboardingView(authorizationService: AuthorizationService(sender: sender))
-    } else {
-        Text("Failed to initialize preview")
     }
 }

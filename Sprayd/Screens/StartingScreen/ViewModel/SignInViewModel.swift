@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 @Observable
 final class SignInViewModel {
+    
     // MARK: - Fields
     var email: String = ""
     var password: String = ""
@@ -17,15 +18,18 @@ final class SignInViewModel {
     var errorMessage: String?
 
     private let authorizationService: AuthorizationService
+    private let tokenStore: SessionTokenStoring
     private let onLoginSuccess: () -> Void
     private static let errorBannerDuration: TimeInterval = 3
 
     // MARK: - Init
     init(
         authorizationService: AuthorizationService,
+        tokenStore: SessionTokenStoring,
         onLoginSuccess: @escaping () -> Void = {}
     ) {
         self.authorizationService = authorizationService
+        self.tokenStore = tokenStore
         self.onLoginSuccess = onLoginSuccess
     }
 
@@ -45,7 +49,11 @@ final class SignInViewModel {
                     email: email,
                     password: password
                 )
-                UserDefaults.standard.set(response.token, forKey: "userToken")
+                guard tokenStore.save(token: response.token) else {
+                    showError("Failed to save your session securely. Please try again.")
+                    isLoading = false
+                    return
+                }
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
                 onLoginSuccess()
             } catch let error as APIErrorResponse {

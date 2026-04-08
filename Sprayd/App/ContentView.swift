@@ -28,7 +28,8 @@ struct ContentView: View {
                     ))
             } else {
                 OnboardingView(
-                    authorizationService: compositionRoot.authorizationService
+                    authorizationService: compositionRoot.authorizationService,
+                    tokenStore: compositionRoot.sessionTokenStore
                 ) {
                     withAnimation(.easeInOut(duration: 0.35)) {
                         hasCompletedOnboarding = true

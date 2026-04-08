@@ -27,4 +27,8 @@ final class CompositionRoot {
     lazy var authorizationService: AuthorizationService = {
         AuthorizationService(sender: sender)
     }()
+
+    lazy var sessionTokenStore: SessionTokenStoring = {
+        SessionTokenStore()
+    }()
 }

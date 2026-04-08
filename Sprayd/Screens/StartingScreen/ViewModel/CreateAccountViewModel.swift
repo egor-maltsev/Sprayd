@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 @Observable
 final class CreateAccountViewModel {
+
     // MARK: - Fields
     var username: String = ""
     var email: String = ""
@@ -19,15 +20,18 @@ final class CreateAccountViewModel {
     var errorMessage: String?
 
     private let authorizationService: AuthorizationService
+    private let tokenStore: SessionTokenStoring
     private let onRegistrationSuccess: () -> Void
     private static let errorBannerDuration: TimeInterval = 3
 
     // MARK: - Init
     init(
         authorizationService: AuthorizationService,
+        tokenStore: SessionTokenStoring,
         onRegistrationSuccess: @escaping () -> Void = {}
     ) {
         self.authorizationService = authorizationService
+        self.tokenStore = tokenStore
         self.onRegistrationSuccess = onRegistrationSuccess
     }
 
@@ -86,7 +90,11 @@ final class CreateAccountViewModel {
                     email: email,
                     password: password
                 )
-                UserDefaults.standard.set(loginResponse.token, forKey: "userToken")
+                guard tokenStore.save(token: loginResponse.token) else {
+                    showError("Failed to save your session securely. Please try again.")
+                    isLoading = false
+                    return
+                }
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
                 onRegistrationSuccess()
             } catch let error as APIErrorResponse {
