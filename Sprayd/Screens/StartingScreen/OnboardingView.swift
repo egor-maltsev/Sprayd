@@ -64,9 +64,17 @@ struct OnboardingView: View {
                         .navigationDestination(for: Route.self) { route in
                             switch route {
                             case .signIn:
-                                SignInView(onContinueTapped: {
-                                    // TODO: sign in action
-                                })
+                                let vm = SignInViewModel(
+                                    authorizationService: authorizationService
+                                )
+                                SignInView(viewModel: vm)
+                                    .onAppear {
+                                        vm.onLoginSuccess = {
+                                            withAnimation {
+                                                onFinished()
+                                            }
+                                        }
+                                    }
                             case .createAccount:
                                 let vm = CreateAccountViewModel(
                                     authorizationService: authorizationService

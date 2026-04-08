@@ -46,6 +46,29 @@ final class Sender {
         )
     }
     
+    func sendEmpty(
+        endpoint: String,
+        method: HTTPMethod,
+        headers: [String: String]? = nil,
+        body: Data? = nil
+    ) async throws {
+        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
+            throw APIError.invalidURL
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        request.httpBody = body
+        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        guard (200...299).contains(http.statusCode) else {
+            throw try decodeErrorResponse(data)
+        }
+    }
+
     private func sendWithRetry<T: Codable>(
         request: URLRequest,
         endpoint: String,

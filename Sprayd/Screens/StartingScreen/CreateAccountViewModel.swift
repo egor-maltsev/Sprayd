@@ -72,12 +72,18 @@ final class CreateAccountViewModel {
 
         Task {
             do {
-                let response = try await authorizationService.register(
+                let registerResponse = try await authorizationService.register(
                     email: email,
                     password: password
                 )
-                UserDefaults.standard.set(response.id?.uuidString ?? "", forKey: "userId")
-                UserDefaults.standard.set(response.email, forKey: "userEmail")
+                UserDefaults.standard.set(registerResponse.id?.uuidString ?? "", forKey: "userId")
+                UserDefaults.standard.set(registerResponse.email, forKey: "userEmail")
+
+                let loginResponse = try await authorizationService.login(
+                    email: email,
+                    password: password
+                )
+                UserDefaults.standard.set(loginResponse.token, forKey: "userToken")
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
                 onRegistrationSuccess()
             } catch let error as APIErrorResponse {

@@ -22,10 +22,7 @@ struct SignInView: View {
     }
 
     // MARK: - Fields
-    @State private var email: String = ""
-    @State private var password: String = ""
-
-    let onContinueTapped: () -> Void
+    @Bindable var viewModel: SignInViewModel
 
     // MARK: - Body
     var body: some View {
@@ -44,15 +41,16 @@ struct SignInView: View {
                 AuthInputField(
                     title: Const.emailTitle,
                     placeholder: Const.emailPlaceholder,
-                    text: $email,
+                    text: $viewModel.email,
                     textContentType: .emailAddress
                 )
 
                 AuthInputField(
                     title: Const.passwordTitle,
                     placeholder: Const.passwordPlaceholder,
-                    text: $password,
+                    text: $viewModel.password,
                     isSecure: true,
+                    isPasswordToggleable: true,
                     textContentType: .oneTimeCode
                 )
 
@@ -63,36 +61,58 @@ struct SignInView: View {
             }
             .padding(.horizontal, Metrics.tripleModule)
             .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let errorMessage = viewModel.errorMessage {
+                VStack {
+                    errorBanner(message: errorMessage)
+                        .padding(.horizontal, Metrics.tripleModule)
+                        .padding(.top, Metrics.module)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    Spacer()
+                }
+            }
         }
+        .animation(.easeInOut(duration: 0.3), value: viewModel.errorMessage)
     }
 
     // MARK: - Subviews
     private var continueButton: some View {
-        Button(action: onContinueTapped) {
+        Button(action: viewModel.login) {
             HStack {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .tint(.white)
+                } else {
+                    Text(Const.continueText)
+                        .font(.InstrumentMedium20)
+                        .foregroundStyle(Color.white)
+                }
+
                 Spacer()
 
-                Text(Const.continueText)
-                    .font(.InstrumentMedium20)
-                    .foregroundStyle(Color.white)
-
-                Spacer()
-
-                Icons.chevronRight
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.white)
+                if !viewModel.isLoading {
+                    Icons.chevronRight
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Color.white)
+                }
             }
             .padding(.horizontal, Metrics.tripleModule)
             .frame(height: Const.buttonHeight)
-            .background(Color.black)
+            .background(viewModel.isFormValid ? Color.black : Color.black.opacity(0.3))
             .clipShape(RoundedRectangle(cornerRadius: Const.buttonCornerRadius))
         }
         .buttonStyle(.plain)
         .padding(.horizontal, Metrics.tripleModule)
+        .disabled(!viewModel.isFormValid || viewModel.isLoading)
     }
-}
 
-// MARK: - Preview
-#Preview {
-    SignInView(onContinueTapped: {})
+    private func errorBanner(message: String) -> some View {
+        Text(message)
+            .font(.InstrumentMedium16)
+            .foregroundStyle(.white)
+            .padding(Metrics.doubleModule)
+            .frame(maxWidth: .infinity)
+            .background(Color.accentRed)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
 }

@@ -59,4 +59,13 @@ final class AuthorizationService {
             headers: ["Authorization": "Basic \(base64)"]
         )
     }
+
+    /// POST /auth/logout  (Bearer Token)
+    func logout(token: String) async throws {
+        try await sender.sendEmpty(
+            endpoint: "/auth/logout",
+            method: .post,
+            headers: ["Authorization": "Bearer \(token)"]
+        )
+    }
 }
