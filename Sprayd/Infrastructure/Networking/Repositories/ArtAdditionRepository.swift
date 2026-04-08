@@ -50,8 +50,8 @@ final class ArtAdditionRepository {
         locationName: String,
         latitude: Double,
         longitude: Double,
-        author: Author,
-        category: Category
+        author: Author?,
+        category: Category?
     ) async throws -> ArtItem {
         let response = try await service.createArtItem(
             request: CreateArtItemRequest(
@@ -60,9 +60,9 @@ final class ArtAdditionRepository {
                 location: locationName,
                 latitude: latitude,
                 longitude: longitude,
-                author: author.name,
+                author: author?.name ?? "",
                 state: ArtState.new.rawValue,
-                category: category.name
+                category: category?.name ?? ""
             )
         )
 

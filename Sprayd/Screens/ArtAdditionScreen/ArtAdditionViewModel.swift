@@ -55,7 +55,6 @@ final class ArtAdditionViewModel: ObservableObject {
     
     init(repository: ArtAdditionRepository) {
         self.repository = repository
-        self.selectedCategory = availableCategories.first
     }
 
     var canCreate: Bool {
@@ -63,8 +62,6 @@ final class ArtAdditionViewModel: ObservableObject {
         !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         selectedCoordinate != nil &&
         selectedLocationName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false &&
-        selectedAuthor != nil &&
-        selectedCategory != nil &&
         !isCreateButtonDisabled
     }
 
@@ -80,15 +77,9 @@ final class ArtAdditionViewModel: ObservableObject {
 
         do {
             availableAuthors = try await repository.syncArtists()
-            if selectedAuthor == nil {
-                selectedAuthor = availableAuthors.first
-            }
         } catch {
             do {
                 availableAuthors = try repository.fetchAuthors()
-                if selectedAuthor == nil {
-                    selectedAuthor = availableAuthors.first
-                }
             } catch {
                 presentError(error)
             }
@@ -98,9 +89,7 @@ final class ArtAdditionViewModel: ObservableObject {
     func createArtItem() async {
         guard canCreate,
               let coordinate = selectedCoordinate,
-              let selectedLocationName,
-              let selectedAuthor,
-              let selectedCategory else {
+              let selectedLocationName else {
             presentError(APIError.invalidRequest)
             return
         }
