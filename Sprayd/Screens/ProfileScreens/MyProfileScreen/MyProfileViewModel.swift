@@ -15,6 +15,7 @@ final class MyProfileViewModel: ObservableObject {
     enum Option: String {
         case posted = "Posted"
         case visited = "Visited"
+        case favourites = "Favourites"
     }
 
     // MARK: - Fields
@@ -25,6 +26,7 @@ final class MyProfileViewModel: ObservableObject {
     @Published var draftBio: String = ""
     @Published var posts: [ArtItem]
     @Published var visited: [ArtItem]
+    @Published var favourites: [ArtItem]
 
     // logout state (feature/authotization-service)
     @Published var showLogoutError: Bool = false
@@ -54,7 +56,14 @@ final class MyProfileViewModel: ObservableObject {
     }
 
     var displayedItems: [ArtItem]? {
-        selectedOption == .posted ? posts : visited
+        switch selectedOption {
+        case .posted:
+            return posts
+        case .visited:
+            return visited
+        case .favourites:
+            return favourites
+        }
     }
 
     // MARK: - Lifecycle
@@ -66,6 +75,7 @@ final class MyProfileViewModel: ObservableObject {
         bio: String = "Description",
         posts: [ArtItem] = [],
         visited: [ArtItem] = [],
+        favourites: [ArtItem] = [],
     ) {
         self.authorizationService = authorizationService
         self.tokenStore = tokenStore
@@ -74,6 +84,7 @@ final class MyProfileViewModel: ObservableObject {
         self.bio = bio
         self.posts = posts
         self.visited = visited
+        self.favourites = favourites
     }
 
     // MARK: - Logic

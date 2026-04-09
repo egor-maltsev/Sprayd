@@ -231,6 +231,7 @@ struct MyProfileView: View {
         Picker("", selection: $viewModel.selectedOption) {
             Text("Posted").tag(MyProfileViewModel.Option.posted)
             Text("Visited").tag(MyProfileViewModel.Option.visited)
+            Text("Favourites").tag(MyProfileViewModel.Option.favourites)
         }
         .pickerStyle(.segmented)
         .padding(.horizontal)
@@ -238,7 +239,8 @@ struct MyProfileView: View {
     
     private var sectionTitle: some View {
         Text(viewModel.selectedOptionTitle)
-            .frame(maxWidth: 150)
+            .frame(maxWidth: 160)
+            .padding(10)
             .font(.ClimateCrisis20)
     }
     
