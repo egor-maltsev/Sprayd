@@ -102,8 +102,5 @@ struct AuthorPickerView: View {
 }
 
 #Preview {
-    AuthorPickerView(
-        viewModel: ArtAdditionViewModel(),
-        onSelect: { _ in }
-    )
+    Text("AuthorPickerView Preview")
 }

@@ -24,8 +24,20 @@ final class CompositionRoot {
     }()
 
     lazy var sender: Sender = Sender()
+
     lazy var authorizationService: AuthorizationService = {
         AuthorizationService(sender: sender)
+    }()
+
+    lazy var artAdditionService: ArtAdditionService = {
+        ArtAdditionService(sender: sender)
+    }()
+
+    lazy var artAdditionRepository: ArtAdditionRepository = {
+        ArtAdditionRepository(
+            service: artAdditionService,
+            modelContext: modelContext
+        )
     }()
 
     lazy var sessionTokenStore: SessionTokenStoring = {

@@ -107,8 +107,5 @@ struct CategoryPickerView: View {
 }
 
 #Preview {
-    CategoryPickerView(
-        viewModel: ArtAdditionViewModel(),
-        onSelect: { _ in }
-    )
+    Text("CategoryPickerView Preview")
 }

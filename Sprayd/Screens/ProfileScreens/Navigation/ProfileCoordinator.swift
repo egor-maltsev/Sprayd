@@ -11,19 +11,20 @@ internal import Combine
 final class ProfileCoordinator: ObservableObject {
     // MARK: - Fields
     @Published var path: [ProfileRoute] = []
-
+    private let artAdditionRepository: ArtAdditionRepository
     private let authorizationService: AuthorizationService
     private let tokenStore: SessionTokenStoring
 
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
-        tokenStore: SessionTokenStoring
+        tokenStore: SessionTokenStoring,
+        artAdditionRepository: ArtAdditionRepository
     ) {
         self.authorizationService = authorizationService
         self.tokenStore = tokenStore
+        self.artAdditionRepository = artAdditionRepository
     }
-
     // MARK: - Navigation logic
     func openAddArt() {
         path.append(.addArt)
@@ -58,7 +59,9 @@ final class ProfileCoordinator: ObservableObject {
             ArtAdditionView(
                 onBackButtonTapped: { [weak self] in
                     self?.pop()},
-                viewModel: ArtAdditionViewModel()
+                viewModel: ArtAdditionViewModel(
+                    repository: artAdditionRepository
+                )
             )
         }
     }

@@ -179,25 +179,3 @@ private struct UIImagePickerBridge: UIViewControllerRepresentable {
         }
     }
 }
-
-#Preview {
-    ArtObjectView(item: ArtItem(
-        remoteID: UUID(),
-        name: "The Gliders",
-        itemDescription: "Mural by Ana Markov originally painted in 2015. It explores themes of loneliness and social issues.",
-        images: [
-            ArtImage(remoteID: UUID(), urlString: "art"),
-            ArtImage(remoteID: UUID(), urlString: "bird"),
-            ArtImage(remoteID: UUID(), urlString: "cube")
-        ],
-        location: "St. Petersburg",
-        author: "Ana Markov",
-        uploadedBy: "Loxxych",
-        createdAt: .now,
-        state: .new,
-        category: "Mural",
-        likesCount: 0,
-        latitude: 0,
-        longitude: 0
-    ))
-}
