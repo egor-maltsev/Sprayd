@@ -9,14 +9,14 @@ import SwiftData
 @Observable
 final class ArtObjectViewModel {
     // MARK: - Data fields
-    let name: String
-    let itemDescription: String
-    let photoImageNames: [String]
-    let location: String
-    let author: String
-    let category: String
-    let postedBy: String
-    let dateText: String
+    var name: String
+    var itemDescription: String
+    var photoImageNames: [String]
+    var location: String
+    var author: String
+    var category: String
+    var postedBy: String
+    var dateText: String?
 
     // MARK: - UI state
     var selectedPhotoIndex: Int = 0
@@ -24,6 +24,10 @@ final class ArtObjectViewModel {
     var isFavorite: Bool = false
     var isVisited: Bool = false
     private var item: ArtItem?
+
+    var itemID: UUID? {
+        item?.id
+    }
 
     // MARK: - Init
     init(
@@ -34,7 +38,7 @@ final class ArtObjectViewModel {
         author: String,
         category: String,
         postedBy: String,
-        dateText: String
+        dateText: String?
     ) {
         self.name = name
         self.itemDescription = itemDescription
@@ -48,23 +52,15 @@ final class ArtObjectViewModel {
     }
 
     convenience init(item: ArtItem) {
-        let uploadedByValue = item.uploadedBy?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let imageURLs = item.images
-            .map(\.urlString)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-
         self.init(
             name: item.name,
             itemDescription: item.itemDescription,
-            photoImageNames: imageURLs,
+            photoImageNames: Self.makeImageURLs(from: item),
             location: item.location,
             author: item.author,
             category: item.category,
-            postedBy: (uploadedByValue?.isEmpty == false ? uploadedByValue! : "Unknown"),
-            dateText: item.createdAt.formatted(date: .numeric, time: .omitted)
+            postedBy: Self.postedByText(from: item),
+            dateText: Self.dateText(from: item)
         )
 
         self.item = item
@@ -87,11 +83,58 @@ final class ArtObjectViewModel {
         isPhotoPreviewPresented = true
     }
 
+    func apply(item: ArtItem) {
+        let currentPhoto = photoImageNames.indices.contains(selectedPhotoIndex)
+            ? photoImageNames[selectedPhotoIndex]
+            : nil
+
+        self.item = item
+        name = item.name
+        itemDescription = item.itemDescription
+        photoImageNames = Self.makeImageURLs(from: item)
+        location = item.location
+        author = item.author
+        category = item.category
+        postedBy = Self.postedByText(from: item)
+        dateText = Self.dateText(from: item)
+        isFavorite = item.isFavorite
+
+        if let currentPhoto, let preservedIndex = photoImageNames.firstIndex(of: currentPhoto) {
+            selectedPhotoIndex = preservedIndex
+        } else if photoImageNames.isEmpty {
+            selectedPhotoIndex = 0
+        } else {
+            selectedPhotoIndex = min(selectedPhotoIndex, photoImageNames.count - 1)
+        }
+    }
+
+    private static func postedByText(from item: ArtItem) -> String {
+        let uploadedByValue = item.uploadedBy?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return uploadedByValue?.isEmpty == false ? uploadedByValue! : "Unknown"
+    }
+
+    private static func dateText(from item: ArtItem) -> String? {
+        guard let createdDate = item.createdDate else { return nil }
+        return createdDate.formatted(date: .numeric, time: .omitted)
+    }
+
+    private static func makeImageURLs(from item: ArtItem) -> [String] {
+        item.orderedImages
+            .map(\.urlString)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
     // MARK: - Sample data
 
     static let sample = ArtObjectViewModel(
         name: "The Gliders",
-        itemDescription: "Mural by Ana Markov originally painted in 2015. It explores themes of loneliness and social issues. ...",
+        itemDescription: """
+        Mural by Ana Markov originally painted in 2015.
+        It explores themes of loneliness and social issues. ...
+        """,
         photoImageNames: ["art", "bird", "cube"],
         location: "St. Petersburg",
         author: "Ana Markov",

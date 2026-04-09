@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 import UIKit
 
 struct ArtObjectView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var viewModel: ArtObjectViewModel
     @State private var showContributeSourceDialog = false
     @State private var contributePickerSource: ContributePickerSource?
-    @State private var imageLoaderService: ImageLoaderService?
     private let onAuthorTap: (String) -> Void
     private let onPostedByTap: (String) -> Void
 
@@ -32,7 +33,7 @@ struct ArtObjectView: View {
         ZStack {
             Color.appBackground
                 .ignoresSafeArea(edges: .all)
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: Metrics.doubleModule) {
 
                     ArtCardView(
@@ -48,7 +49,6 @@ struct ArtObjectView: View {
                             onPostedByTap(username)
                         }
                     )
-                        .imageLoaderService(imageLoaderService)
 
                     VStack(spacing: Metrics.oneAndHalfModule) {
                         markVisitedButton
@@ -65,7 +65,6 @@ struct ArtObjectView: View {
                 selectedPhotoIndex: $viewModel.selectedPhotoIndex,
                 photoImageNames: self.viewModel.photoImageNames
             )
-            .imageLoaderService(imageLoaderService)
         }
         .confirmationDialog("Add a photo", isPresented: $showContributeSourceDialog, titleVisibility: .visible) {
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -85,18 +84,27 @@ struct ArtObjectView: View {
             )
             .ignoresSafeArea()
         }
-        .task {
-            if imageLoaderService == nil {
-                imageLoaderService = ImageLoaderService(imageCacheService: ImageCacheService())
-            }
-
-            print("DETAIL PHOTO URLS:", viewModel.photoImageNames)
+        .task(id: viewModel.itemID) {
+            await loadArtItemDetails()
         }
         .toolbar(.hidden, for: .tabBar)
     }
 
     private func normalized(_ value: String) -> String {
         value.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    @MainActor
+    private func loadArtItemDetails() async {
+        guard let itemID = viewModel.itemID else { return }
+
+        do {
+            let service = ArtSyncService(modelContext: modelContext)
+            let item = try await service.syncArtItemDetails(for: itemID)
+            viewModel.apply(item: item)
+        } catch {
+            print("Art item detail sync error:", error)
+        }
     }
 
     private var markVisitedButton: some View {

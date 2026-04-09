@@ -18,7 +18,16 @@ enum ArtAdditionMapper {
     }
 
     static func mapArtItem(_ response: ArtItemResponse) -> ArtItem {
-        let images = response.firstImageUrl.map { [ArtImage(urlString: $0)] } ?? []
+        let images = response.firstImageUrl.map {
+            [
+                ArtImage(
+                    urlString: $0,
+                    createdAt: Date(timeIntervalSince1970: 0),
+                    timeStamp: 0,
+                    userID: nil
+                )
+            ]
+        } ?? []
 
         return ArtItem(
             id: response.id ?? UUID(),
@@ -27,6 +36,7 @@ enum ArtAdditionMapper {
             images: images,
             location: response.location,
             author: response.author,
+            createdDate: response.createdAt,
             state: ArtState(rawValue: response.state) ?? .new,
             category: response.category,
             latitude: response.latitude,

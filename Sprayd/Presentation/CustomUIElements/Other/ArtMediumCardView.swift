@@ -19,9 +19,32 @@ struct ArtMediumCardView: View {
     
     // MARK: - Fields
     let item: ArtItem
+    private let onOpenDetails: (() -> Void)?
+
+    init(
+        item: ArtItem,
+        onOpenDetails: (() -> Void)? = nil
+    ) {
+        self.item = item
+        self.onOpenDetails = onOpenDetails
+    }
     
     // MARK: - Subviews
-    private var artworkImage: some View {
+    private func artworkImage(width: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: Const.imageCornerRadius)
+            .fill(Const.placeholderColor)
+            .frame(width: width)
+            .frame(height: Const.imageHeight)
+            .overlay {
+                artworkImageContent
+                    .frame(width: width, height: Const.imageHeight)
+            }
+            .clipped()
+            .clipShape(RoundedRectangle(cornerRadius: Const.imageCornerRadius))
+    }
+
+    @ViewBuilder
+    private var artworkImageContent: some View {
         CachedAsyncImage(url: item.primaryImageURL) { phase in
             switch phase {
             case .success(let image):
@@ -30,7 +53,7 @@ struct ArtMediumCardView: View {
                     .scaledToFill()
             case .empty, .failure:
                 RoundedRectangle(cornerRadius: Const.imageCornerRadius)
-                    .fill(Const.placeholderColor)
+                    .fill(Color.clear)
                     .overlay {
                         Icons.photo
                             .font(.system(size: 34, weight: .regular))
@@ -38,9 +61,7 @@ struct ArtMediumCardView: View {
                     }
             }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: Const.imageHeight)
-        .clipShape(RoundedRectangle(cornerRadius: Const.imageCornerRadius))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var titleRow: some View {
@@ -78,9 +99,11 @@ struct ArtMediumCardView: View {
             
             Spacer(minLength: Metrics.oneAndHalfModule)
             
-            Text("01.01.25")
-                .font(.InstrumentRegular13)
-                .foregroundStyle(Color.secondaryColor)
+            if let createdDate = item.createdDate {
+                Text(createdDate.formatted(date: .numeric, time: .omitted))
+                    .font(.InstrumentRegular13)
+                    .foregroundStyle(Color.secondaryColor)
+            }
         }
     }
     
@@ -102,37 +125,72 @@ struct ArtMediumCardView: View {
             MiniProfileView(name: name)
         }
     }
+
+    private func contentWidth(for availableWidth: CGFloat) -> CGFloat {
+        max(availableWidth - (Metrics.tripleModule * 2), 0)
+    }
+
+    private var openDetailsButton: some View {
+        Button(action: { onOpenDetails?() }) {
+            HStack {
+                Text("Open details")
+                    .font(.InstrumentMedium16)
+                Spacer()
+                Icons.rightArrow
+            }
+            .foregroundStyle(Color.appContrastForeground)
+            .padding(.horizontal, Metrics.twoAndHalfModule)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(Color.appContrastBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
+    }
     
     // MARK: - Body
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: Metrics.doubleModule) {
-                artworkImage
-                
-                VStack(alignment: .leading, spacing: Metrics.threeQuartersModule) {
-                    titleRow
-                    metaRow
-                }
-                
-                descriptionText
-                
-                VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
-                    personSection(
-                        title: "Author",
-                        titleFont: .InstrumentBold13,
-                        name: item.author
-                    )
+        GeometryReader { geometry in
+            let width = contentWidth(for: geometry.size.width)
+
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: Metrics.doubleModule) {
+                    artworkImage(width: width)
                     
-                    personSection(
-                        title: "Posted by",
-                        titleFont: .InstrumentRegular13,
-                        name: "PostAuthor"
-                    )
+                    VStack(alignment: .leading, spacing: Metrics.threeQuartersModule) {
+                        titleRow
+                        metaRow
+                    }
+                    .frame(width: width, alignment: .leading)
+                    
+                    descriptionText
+                        .frame(width: width, alignment: .leading)
+                    
+                    VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
+                        personSection(
+                            title: "Author",
+                            titleFont: .InstrumentBold13,
+                            name: item.author
+                        )
+                        
+                        personSection(
+                            title: "Posted by",
+                            titleFont: .InstrumentRegular13,
+                            name: item.uploadedBy ?? "Unknown"
+                        )
+                    }
+                    .frame(width: width, alignment: .leading)
+
+                    if onOpenDetails != nil {
+                        openDetailsButton
+                            .frame(width: width, alignment: .leading)
+                    }
                 }
+                .padding(.horizontal, Metrics.tripleModule)
+                .padding(.top, Metrics.tripleModule)
+                .padding(.bottom, Metrics.tripleModule)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, Metrics.tripleModule)
-            .padding(.top, Metrics.tripleModule)
-            .padding(.bottom, Metrics.tripleModule)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
