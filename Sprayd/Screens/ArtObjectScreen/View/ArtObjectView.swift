@@ -12,7 +12,6 @@ struct ArtObjectView: View {
     @State private var viewModel: ArtObjectViewModel
     @State private var showContributeSourceDialog = false
     @State private var contributePickerSource: ContributePickerSource?
-    @Environment(\.imageLoaderService) private var imageLoaderService
     private let onAuthorTap: (String) -> Void
     private let onPostedByTap: (String) -> Void
 
@@ -48,7 +47,6 @@ struct ArtObjectView: View {
                             onPostedByTap(username)
                         }
                     )
-                        .imageLoaderService(imageLoaderService)
 
                     VStack(spacing: Metrics.oneAndHalfModule) {
                         markVisitedButton
@@ -65,7 +63,6 @@ struct ArtObjectView: View {
                 selectedPhotoIndex: $viewModel.selectedPhotoIndex,
                 photoImageNames: self.viewModel.photoImageNames
             )
-            .imageLoaderService(imageLoaderService)
         }
         .confirmationDialog("Add a photo", isPresented: $showContributeSourceDialog, titleVisibility: .visible) {
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
