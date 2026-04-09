@@ -37,7 +37,7 @@ struct ArtCardView: View {
                         Image(systemName: "photo")
                             .resizable()
                             .scaledToFit()
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Color.secondaryColor)
                             .padding(Metrics.tripleModule)
                     }
                 }
@@ -75,14 +75,14 @@ struct ArtCardView: View {
         HStack(alignment: .firstTextBaseline) {
             Text(viewModel.name)
                 .font(Font.InstrumentBold20)
-                .foregroundStyle(.black)
+                .foregroundStyle(Color.appPrimaryText)
 
             Spacer(minLength: Metrics.oneAndHalfModule)
 
             HStack(spacing: Metrics.module) {
                 Text(String(viewModel.likesCount))
                     .font(Font.InstrumentMedium13)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(Color.appPrimaryText)
 
                 if viewModel.isLiked {
                     Icons.filledHeart

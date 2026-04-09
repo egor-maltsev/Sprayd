@@ -160,7 +160,7 @@ struct FeaturedView: View {
                 VStack(alignment: .leading, spacing: Metrics.module) {
                     Text(item.name)
                         .font(Font.InstrumentBold20)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.appPrimaryText)
 
                     metadataLine(text: displayLocation(for: item), icon: Icons.location, font: .InstrumentMedium13)
                     dateLine(createdAt: item.createdAt, font: .InstrumentMedium13)
@@ -180,7 +180,7 @@ struct FeaturedView: View {
         .padding(Metrics.oneAndHalfModule)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.black.opacity(0.35), lineWidth: 1)
+                .stroke(Color.appPrimaryText.opacity(0.22), lineWidth: 1)
         )
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -193,7 +193,7 @@ struct FeaturedView: View {
                 VStack(alignment: .leading, spacing: Metrics.module) {
                     Text(item.name)
                         .font(.InstrumentBold17)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.appPrimaryText)
                         .lineLimit(1)
 
                     personLine(label: "Creator", value: item.author, size: 16, font: .InstrumentMedium10)
@@ -201,13 +201,13 @@ struct FeaturedView: View {
                     if let uploadedBy = uploadedByText(for: item) {
                         Text("Uploaded by: \(uploadedBy)")
                             .font(.InstrumentMedium10)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Color.secondaryColor)
                             .lineLimit(1)
                     }
 
                     Text(uploadDateText(for: item.createdAt))
                         .font(.InstrumentMedium10)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Color.secondaryColor)
                         .lineLimit(1)
                 }
 
@@ -244,7 +244,7 @@ struct FeaturedView: View {
     private func artworkImageContent(for item: ArtItem) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: Layout.artworkCornerRadius, style: .continuous)
-                .fill(Color.gray.opacity(0.16))
+                .fill(Color.appMutedFill)
 
             if let imageURL = item.primaryImageURL {
                 AsyncImage(url: imageURL) { phase in
@@ -265,7 +265,7 @@ struct FeaturedView: View {
 
     private var placeholderArtworkImage: some View {
         Icons.photo
-            .foregroundStyle(.gray.opacity(0.7))
+            .foregroundStyle(Color.secondaryColor.opacity(0.8))
             .font(.system(size: 34, weight: .medium))
     }
 

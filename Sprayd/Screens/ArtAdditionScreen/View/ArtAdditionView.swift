@@ -39,7 +39,7 @@ struct ArtAdditionView: View {
     // MARK: - Body
     var body: some View {
         ZStack {
-            Color(Color.appBackground)
+            Color.appBackground
                 .ignoresSafeArea()
             
             if viewModel.isImageSourceDialogPresented {
@@ -166,7 +166,7 @@ struct ArtAdditionView: View {
             
             Text("Add new art")
                 .font(.InstrumentBold20)
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.appPrimaryText)
         }
         .frame(height: 44)
     }
@@ -215,11 +215,11 @@ struct ArtAdditionView: View {
             VStack(spacing: Metrics.oneAndHalfModule) {
                 Icons.photo
                     .font(.system(size: 28, weight: .medium))
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.appContrastForeground)
                 
                 Text("Add a picture*")
                     .font(.InstrumentRegular13)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.appContrastForeground)
             }
             .frame(width: Const.photoItemWidth, height: Const.photoItemHeight)
             .background(Color.accentRed)
@@ -231,7 +231,7 @@ struct ArtAdditionView: View {
         VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text("Author")
                 .font(.InstrumentMedium18)
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.appPrimaryText)
             
             if let selectedAuthor = viewModel.selectedAuthor {
                 MiniProfileView(name: selectedAuthor.name)
@@ -250,7 +250,7 @@ struct ArtAdditionView: View {
         VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text("Location")
                 .font(.InstrumentMedium18)
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.appPrimaryText)
             
             if let selectedCoordinate = viewModel.selectedCoordinate {
                 HStack(alignment: .top, spacing: Metrics.halfModule) {
@@ -262,7 +262,7 @@ struct ArtAdditionView: View {
                         if let selectedLocationName = viewModel.selectedLocationName {
                             Text(selectedLocationName)
                                 .font(.InstrumentMedium16)
-                                .foregroundStyle(Color.black)
+                                .foregroundStyle(Color.appPrimaryText)
                         }
                         if viewModel.selectedLocationName != coordText {
                             Text(coordText)
@@ -286,7 +286,7 @@ struct ArtAdditionView: View {
         VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
             Text("Category")
                 .font(.InstrumentMedium18)
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.appPrimaryText)
             
             if let selectedCategory = viewModel.selectedCategory {
                 CategoryCapsule(title: selectedCategory.name)
@@ -312,7 +312,7 @@ struct ArtAdditionView: View {
                 
                 Text("Create")
                     .font(.InstrumentMedium20)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.appContrastForeground)
                 
                 Spacer()
                 

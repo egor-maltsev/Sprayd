@@ -31,7 +31,7 @@ struct PhotoView: View {
                         Image(systemName: "photo")
                             .resizable()
                             .scaledToFit()
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Color.secondaryColor)
                     }
                 }
             } else {

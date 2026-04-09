@@ -90,11 +90,11 @@ struct AuthorPickerView: View {
                 .padding(.vertical, Metrics.oneAndHalfModule)
                 .background(
                     RoundedRectangle(cornerRadius: Const.rowCornerRadius, style: .continuous)
-                        .fill(Color.white.opacity(0.6))
+                        .fill(Color.appSurface)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: Const.rowCornerRadius, style: .continuous)
-                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                        .stroke(Color.appPrimaryText.opacity(0.08), lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
