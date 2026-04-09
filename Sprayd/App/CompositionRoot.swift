@@ -24,7 +24,12 @@ final class CompositionRoot {
     }()
 
     lazy var sender: Sender = Sender()
-
+    lazy var artItemsInBoxService: ArtItemsInBoxService = {
+        ArtItemsInBoxService(
+            sender: sender,
+            modelContext: modelContext
+        )
+    }()
     lazy var authorizationService: AuthorizationService = {
         AuthorizationService(sender: sender)
     }()
