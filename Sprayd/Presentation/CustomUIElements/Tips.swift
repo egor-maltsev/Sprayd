@@ -25,17 +25,17 @@ struct MapTip: Tip {
     }
 }
 
-struct ArtAnnotationTip: Tip {
+struct feedTip: Tip {
     var title: Text {
-        Text("Discover map pins")
+        Text("Find new piece of art here")
     }
     
     var message: Text? {
-        Text("Tap on the pins to learn more about the artists and their works.")
+        Text("Search, city selections, interesting art objects nearby")
     }
     
     var image: Image? {
-        Image(systemName: "mappin.circle")
+        Image(systemName: "magnifyingglass")
     }
 }
 
