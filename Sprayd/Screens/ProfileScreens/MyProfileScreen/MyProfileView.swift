@@ -20,6 +20,11 @@ struct MyProfileView: View {
         static let editableFieldMaxWidth: CGFloat = 220
         static let profileInfoRowWidth: CGFloat = 260
     }
+
+    private enum Field: Hashable {
+        case username
+        case bio
+    }
     
     // MARK: - Fields
     @Query(
@@ -32,6 +37,7 @@ struct MyProfileView: View {
 
     @ObservedObject var viewModel: MyProfileViewModel
     let onAddArt: () -> Void
+    @FocusState private var focusedField: Field?
     
     // MARK: - Lifecycle
     init(
@@ -72,6 +78,10 @@ struct MyProfileView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                focusedField = nil
+            }
         }
         .toolbar(.hidden, for: .navigationBar)
         .task(id: favouriteItemIDs) {
@@ -92,9 +102,7 @@ struct MyProfileView: View {
         .alert("Access Needed", isPresented: $viewModel.isPermissionAlertPresented) {
             if viewModel.shouldOfferSettingsRedirect {
                 Button("Settings") {
-                    guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
-                    UIApplication.shared.open(settingsURL)
-                    viewModel.dismissPermissionAlert()
+                    viewModel.openAppSettings()
                 }
             }
             
@@ -113,6 +121,9 @@ struct MyProfileView: View {
             .padding(.trailing, Metrics.tripleModule)
             .padding(.bottom, Metrics.module)
             .background(Color.appBackground)
+        }
+        .task {
+            viewModel.onAppear()
         }
     }
 
@@ -183,6 +194,7 @@ struct MyProfileView: View {
                             .font(.ClimateCrisis22)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: Const.editableFieldMaxWidth)
+                            .focused($focusedField, equals: .username)
                     }
                     
                     HStack {
@@ -191,8 +203,10 @@ struct MyProfileView: View {
                         Button {
                             if (viewModel.isEditingUsername) {
                                 viewModel.saveUsername()
+                                focusedField = nil
                             } else {
                                 viewModel.enterUsernameEditingMode()
+                                focusedField = .username
                             }
                         } label: {
                             if (viewModel.isEditingUsername) {
@@ -216,6 +230,7 @@ struct MyProfileView: View {
                             .font(.InstrumentMedium13)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: Const.editableFieldMaxWidth)
+                            .focused($focusedField, equals: .bio)
                     }
                     
                     HStack {
@@ -224,8 +239,10 @@ struct MyProfileView: View {
                         Button {
                             if (viewModel.isEditingBio) {
                                 viewModel.saveBio()
+                                focusedField = nil
                             } else {
                                 viewModel.enterBioEditingMode()
+                                focusedField = .bio
                             }
                         } label: {
                             if (viewModel.isEditingBio) {
@@ -301,15 +318,7 @@ struct MyProfileView: View {
                 .shadow(radius: 3)
         }
         .buttonStyle(.plain)
-        .disabled(viewModel.isLoggingOut)
+        .disabled(viewModel.isLoggingOut || viewModel.isProfileSyncInProgress)
         .accessibilityLabel("Log out")
     }
-}
-#Preview {
-    MyProfileView(
-        onAddArt: {},
-        viewModel: MyProfileViewModel(
-            authorizationService: AuthorizationService(sender: Sender())
-        )
-    )
 }

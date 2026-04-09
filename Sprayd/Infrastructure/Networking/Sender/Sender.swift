@@ -20,7 +20,7 @@ final class Sender {
         self.baseURL = baseURL
     }
     
-    func send<T: Codable>(
+    func send<T: Decodable>(
         endpoint: String,
         method: HTTPMethod,
         headers: [String: String]? = nil,
@@ -66,7 +66,7 @@ final class Sender {
         }
     }
 
-    private func sendWithRetry<T: Codable>(
+    private func sendWithRetry<T: Decodable>(
         request: URLRequest,
         endpoint: String,
         method: HTTPMethod,
@@ -118,7 +118,7 @@ final class Sender {
         }
     }
     
-    private func handleResponse<T: Codable>(_ response: HTTPURLResponse, data: Data) throws -> T {
+    private func handleResponse<T: Decodable>(_ response: HTTPURLResponse, data: Data) throws -> T {
         switch response.statusCode {
         case 200...299:
             return try decodeResponse(data)
@@ -130,10 +130,9 @@ final class Sender {
         }
     }
     
-    private func decodeResponse<T: Codable>(_ data: Data) throws -> T {
+    private func decodeResponse<T: Decodable>(_ data: Data) throws -> T {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
         do {
             return try decoder.decode(T.self, from: data)
         } catch {
@@ -145,7 +144,6 @@ final class Sender {
         do {
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
-            decoder.dateDecodingStrategy = .iso8601
             return try decoder.decode(APIErrorResponse.self, from: data)
         } catch {
             throw APIError.decodingError(error)

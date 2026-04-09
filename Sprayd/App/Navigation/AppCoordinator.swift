@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-internal import Combine
+import Combine
 
 final class AppCoordinator: ObservableObject {    
     // MARK: - Fields
@@ -26,6 +26,8 @@ final class AppCoordinator: ObservableObject {
         )
         self.profileCoordinator = ProfileCoordinator(
             authorizationService: compositionRoot.authorizationService,
+            imageLoaderService: compositionRoot.imageLoaderService,
+            userService: compositionRoot.userService,
             tokenStore: compositionRoot.sessionTokenStore,
             artAdditionRepository: compositionRoot.artAdditionRepository
         )
