@@ -16,6 +16,7 @@ struct CityScreenView: View {
     }
 
     private let city: String
+    @State private var selectedItem: ArtItem?
 
     @Query(
         sort: [
@@ -53,12 +54,11 @@ struct CityScreenView: View {
                     } else {
                         LazyVStack(spacing: Metrics.doubleModule) {
                             ForEach(cityItems) { item in
-                                NavigationLink {
-                                    ArtObjectView(item: item)
-                                } label: {
-                                    cityItemCard(item: item)
-                                }
-                                .buttonStyle(.plain)
+                                cityItemCard(item: item)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        selectedItem = item
+                                    }
                             }
                         }
                     }
@@ -69,6 +69,9 @@ struct CityScreenView: View {
             .safeAreaPadding(.bottom, Metrics.oneAndHalfModule)
         }
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(item: $selectedItem) { item in
+            ArtObjectView(item: item)
+        }
     }
 
     private var headerCard: some View {
@@ -113,7 +116,7 @@ struct CityScreenView: View {
 
                 Spacer(minLength: Metrics.module)
 
-                likesView(count: item.likesCount)
+                favoriteButton(for: item)
                     .padding(.top, Metrics.halfModule)
             }
         }
@@ -183,14 +186,19 @@ struct CityScreenView: View {
             .lineLimit(2)
     }
 
-    private func likesView(count: Int) -> some View {
-        HStack(spacing: Metrics.halfModule) {
-            Text("\(count)")
-                .font(.InstrumentMedium13)
-                .foregroundStyle(.black)
+    private func favoriteButton(for item: ArtItem) -> some View {
+        @Bindable var item = item
 
-            Icons.heart
+        return Button {
+            item.isFavorite.toggle()
+        } label: {
+            if item.isFavorite {
+                Icons.filledHeart
+            } else {
+                Icons.heart
+            }
         }
+        .buttonStyle(.plain)
     }
 
     private var emptyState: some View {

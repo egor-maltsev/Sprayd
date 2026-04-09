@@ -70,12 +70,11 @@ struct FeaturedView: View {
                     if let featuredItem {
                         VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                             sectionTitle("Featured")
-                            NavigationLink {
-                                ArtObjectView(item: featuredItem)
-                            } label: {
-                                featuredCard(item: featuredItem)
-                            }
-                            .buttonStyle(.plain)
+                            featuredCard(item: featuredItem)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    onSelectItem(featuredItem)
+                                }
                         }
                     }
 
@@ -103,23 +102,21 @@ struct FeaturedView: View {
                             sectionTitle("Discover")
 
                             if let first = discoverItems.first {
-                                NavigationLink {
-                                    ArtObjectView(item: first)
-                                } label: {
-                                    discoverLargeCard(item: first)
-                                }
-                                .buttonStyle(.plain)
+                                discoverLargeCard(item: first)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        onSelectItem(first)
+                                    }
                                 .padding(.bottom, Metrics.module)
                             }
 
                             LazyVGrid(columns: gridColumns, spacing: Metrics.doubleModule) {
                                 ForEach(Array(discoverItems.dropFirst().enumerated()), id: \.offset) { _, item in
-                                    NavigationLink {
-                                        ArtObjectView(item: item)
-                                    } label: {
-                                        discoverSmallCard(item: item)
-                                    }
-                                    .buttonStyle(.plain)
+                                    discoverSmallCard(item: item)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            onSelectItem(item)
+                                        }
                                 }
                             }
                         }
@@ -173,7 +170,7 @@ struct FeaturedView: View {
 
                 Spacer()
 
-                likesView(count: item.likesCount)
+                favoriteButton(for: item)
                     .padding(.top, Metrics.module)
             }
         }
@@ -213,7 +210,7 @@ struct FeaturedView: View {
 
                 Spacer(minLength: Metrics.module)
 
-                likesView(count: item.likesCount)
+                favoriteButton(for: item)
                     .scaleEffect(0.9, anchor: .topTrailing)
             }
         }
