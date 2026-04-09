@@ -306,12 +306,3 @@ struct MyProfileView: View {
         .accessibilityLabel("Log out")
     }
 }
-#Preview {
-    MyProfileView(
-        onAddArt: {},
-        viewModel: MyProfileViewModel(
-            authorizationService: AuthorizationService(sender: Sender()),
-            userService: UserService(sender: Sender())
-        )
-    )
-}

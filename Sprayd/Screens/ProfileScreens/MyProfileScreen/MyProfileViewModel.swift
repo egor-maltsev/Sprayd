@@ -47,6 +47,7 @@ final class MyProfileViewModel: ObservableObject {
     @Published var isProfileSyncInProgress: Bool = false
 
     private let authorizationService: AuthorizationService
+    private let imageLoaderService: ImageLoaderService
     private let userService: UserService
     private let tokenStore: SessionTokenStoring
     private var hasLoadedProfile: Bool = false
@@ -73,6 +74,7 @@ final class MyProfileViewModel: ObservableObject {
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
+        imageLoaderService: ImageLoaderService,
         userService: UserService,
         tokenStore: SessionTokenStoring? = nil,
         selectedOption: Option = .posted,
@@ -83,6 +85,7 @@ final class MyProfileViewModel: ObservableObject {
         favourites: [ArtItem] = [],
     ) {
         self.authorizationService = authorizationService
+        self.imageLoaderService = imageLoaderService
         self.userService = userService
         self.tokenStore = tokenStore ?? SessionTokenStore()
         self.selectedOption = selectedOption
@@ -375,21 +378,13 @@ final class MyProfileViewModel: ObservableObject {
     }
 
     private func loadAvatarImage(from rawURL: String) async {
-        guard let url = URL(string: rawURL) else { return }
-
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard
-                let httpResponse = response as? HTTPURLResponse,
-                (200...299).contains(httpResponse.statusCode),
-                let image = UIImage(data: data)
-            else {
-                return
-            }
-            profileImage = image
-        } catch {
-            // Keep default avatar if image can not be loaded.
+        guard let data = await imageLoaderService.loadImageData(from: rawURL),
+              let image = UIImage(data: data)
+        else {
+            return
         }
+
+        profileImage = image
     }
 
     private var currentUserID: UUID? {

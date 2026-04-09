@@ -15,16 +15,19 @@ final class ProfileCoordinator: ObservableObject {
     private let authorizationService: AuthorizationService
     private let userService: UserService
     private let tokenStore: SessionTokenStoring
+    private let imageLoaderService: ImageLoaderService
 
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
+        imageLoaderService: ImageLoaderService,
         userService: UserService,
         tokenStore: SessionTokenStoring,
         artAdditionRepository: ArtAdditionRepository
 
     ) {
         self.authorizationService = authorizationService
+        self.imageLoaderService = imageLoaderService
         self.userService = userService
         self.tokenStore = tokenStore
         self.artAdditionRepository = artAdditionRepository
@@ -48,8 +51,8 @@ final class ProfileCoordinator: ObservableObject {
         MyProfileAssembly(
             authorizationService: authorizationService,
             userService: userService,
-            tokenStore: tokenStore
-        )
+            tokenStore: tokenStore,
+            imageLoaderService: imageLoaderService)
         .build(
             onAddArt: { [weak self] in
                 self?.openAddArt()
