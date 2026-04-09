@@ -175,11 +175,3 @@ struct ArtCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
-
-#Preview {
-    ArtCardView(
-        viewModel: .sample,
-        onAuthorTap: {},
-        onPostedByTap: {}
-    )
-}

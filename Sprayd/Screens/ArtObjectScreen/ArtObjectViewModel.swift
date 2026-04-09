@@ -86,17 +86,4 @@ final class ArtObjectViewModel {
         selectedPhotoIndex = index
         isPhotoPreviewPresented = true
     }
-
-    // MARK: - Sample data
-
-    static let sample = ArtObjectViewModel(
-        name: "The Gliders",
-        itemDescription: "Mural by Ana Markov originally painted in 2015. It explores themes of loneliness and social issues. ...",
-        photoImageNames: ["art", "bird", "cube"],
-        location: "St. Petersburg",
-        author: "Ana Markov",
-        category: "Mural",
-        postedBy: "Loxxych",
-        dateText: "24.02.2025"
-    )
 }

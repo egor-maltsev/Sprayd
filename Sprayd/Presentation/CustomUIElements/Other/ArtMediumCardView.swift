@@ -19,6 +19,15 @@ struct ArtMediumCardView: View {
     
     // MARK: - Fields
     let item: ArtItem
+    private let onOpenDetails: (() -> Void)?
+
+    init(
+        item: ArtItem,
+        onOpenDetails: (() -> Void)? = nil
+    ) {
+        self.item = item
+        self.onOpenDetails = onOpenDetails
+    }
     
     // MARK: - Subviews
     private func artworkImage(width: CGFloat) -> some View {
@@ -90,7 +99,7 @@ struct ArtMediumCardView: View {
             
             Spacer(minLength: Metrics.oneAndHalfModule)
             
-            Text("01.01.25")
+            Text("01.04.20")
                 .font(.InstrumentRegular13)
                 .foregroundStyle(Color.secondaryColor)
         }
@@ -117,6 +126,24 @@ struct ArtMediumCardView: View {
 
     private func contentWidth(for availableWidth: CGFloat) -> CGFloat {
         max(availableWidth - (Metrics.tripleModule * 2), 0)
+    }
+
+    private var openDetailsButton: some View {
+        Button(action: { onOpenDetails?() }) {
+            HStack {
+                Text("Open details")
+                    .font(.InstrumentMedium16)
+                Spacer()
+                Icons.rightArrow
+            }
+            .foregroundStyle(Color.appContrastForeground)
+            .padding(.horizontal, Metrics.twoAndHalfModule)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(Color.appContrastBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
     }
     
     // MARK: - Body
@@ -147,10 +174,15 @@ struct ArtMediumCardView: View {
                         personSection(
                             title: "Posted by",
                             titleFont: .InstrumentRegular13,
-                            name: "PostAuthor"
+                            name: item.uploadedBy ?? "Unknown"
                         )
                     }
                     .frame(width: width, alignment: .leading)
+
+                    if onOpenDetails != nil {
+                        openDetailsButton
+                            .frame(width: width, alignment: .leading)
+                    }
                 }
                 .padding(.horizontal, Metrics.tripleModule)
                 .padding(.top, Metrics.tripleModule)
