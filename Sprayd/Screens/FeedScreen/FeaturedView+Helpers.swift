@@ -8,7 +8,7 @@ extension FeaturedView {
     func sectionTitle(_ title: String) -> some View {
         Text(title)
             .font(.ClimateCrisis22)
-            .foregroundStyle(.black)
+            .foregroundStyle(Color.appPrimaryText)
     }
 
     func featuredCard(item: ArtItem) -> some View {
@@ -19,7 +19,7 @@ extension FeaturedView {
                 VStack(alignment: .leading, spacing: Metrics.module) {
                     Text(item.name)
                         .font(.InstrumentBold20)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.appPrimaryText)
 
                     personLine(label: "Creator", value: item.author, size: 24, font: .InstrumentMedium13)
 
@@ -41,14 +41,14 @@ extension FeaturedView {
     func cityCard(title: String) -> some View {
         VStack(alignment: .leading, spacing: Metrics.module) {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.gray.opacity(0.16))
+                .fill(Color.appMutedFill)
                 .frame(maxWidth: .infinity)
                 .frame(height: 78)
 
             HStack(alignment: .top, spacing: Metrics.module) {
                 Text(title)
                     .font(.InstrumentBold17)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(Color.appPrimaryText)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
@@ -58,7 +58,7 @@ extension FeaturedView {
                 Icons.chevronRight
                     .font(.system(size: 11, weight: .semibold))
                     .padding(.top, 2)
-                    .foregroundStyle(.black.opacity(0.75))
+                    .foregroundStyle(Color.appPrimaryText.opacity(0.75))
             }
             .frame(maxWidth: .infinity, minHeight: 42, alignment: .topLeading)
         }
@@ -91,26 +91,26 @@ extension FeaturedView {
         VStack(alignment: .leading, spacing: Metrics.module) {
             Text(title)
                 .font(.InstrumentBold20)
-                .foregroundStyle(.black)
+                .foregroundStyle(Color.appPrimaryText)
 
             Text(message)
                 .font(.InstrumentRegular13)
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.secondaryColor)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(Metrics.doubleModule)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color.white.opacity(0.5))
-                .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                .fill(Color.appSurface)
+                .stroke(Color.appPrimaryText.opacity(0.14), lineWidth: 1)
         )
     }
 
     func personLine(label: String, value: String, size: CGFloat, font: Font) -> some View {
         HStack(spacing: Metrics.module) {
             Circle()
-                .fill(Color.gray.opacity(0.45))
+                .fill(Color.appMutedFill)
                 .frame(width: size, height: size)
                 .overlay {
                     Icons.person
@@ -124,7 +124,7 @@ extension FeaturedView {
     func personText(label: String, value: String, font: Font) -> some View {
         Text("\(label): \(value)")
             .font(font)
-            .foregroundStyle(.black.opacity(0.8))
+            .foregroundStyle(Color.appPrimaryText.opacity(0.8))
             .lineLimit(1)
     }
 
@@ -135,14 +135,14 @@ extension FeaturedView {
 
             Text(text)
                 .font(font)
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.secondaryColor)
         }
     }
 
     func dateLine(createdAt: Date, font: Font) -> some View {
         Text("Uploaded: \(uploadDateText(for: createdAt))")
             .font(font)
-            .foregroundStyle(.gray)
+            .foregroundStyle(Color.secondaryColor)
             .lineLimit(1)
     }
 

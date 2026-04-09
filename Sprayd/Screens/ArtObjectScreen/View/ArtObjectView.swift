@@ -13,9 +13,17 @@ struct ArtObjectView: View {
     @State private var showContributeSourceDialog = false
     @State private var contributePickerSource: ContributePickerSource?
     @State private var imageLoaderService: ImageLoaderService?
+    private let onAuthorTap: (String) -> Void
+    private let onPostedByTap: (String) -> Void
 
-    init(item: ArtItem) {
+    init(
+        item: ArtItem,
+        onAuthorTap: @escaping (String) -> Void = { _ in },
+        onPostedByTap: @escaping (String) -> Void = { _ in }
+    ) {
         _viewModel = State(initialValue: ArtObjectViewModel(item: item))
+        self.onAuthorTap = onAuthorTap
+        self.onPostedByTap = onPostedByTap
     }
 
     var body: some View {
@@ -27,7 +35,19 @@ struct ArtObjectView: View {
             ScrollView {
                 VStack(spacing: Metrics.doubleModule) {
 
-                    ArtCardView(viewModel: self.viewModel)
+                    ArtCardView(
+                        viewModel: self.viewModel,
+                        onAuthorTap: {
+                            let username = normalized(viewModel.author)
+                            guard !username.isEmpty else { return }
+                            onAuthorTap(username)
+                        },
+                        onPostedByTap: {
+                            let username = normalized(viewModel.postedBy)
+                            guard !username.isEmpty, username != "Unknown" else { return }
+                            onPostedByTap(username)
+                        }
+                    )
                         .imageLoaderService(imageLoaderService)
 
                     VStack(spacing: Metrics.oneAndHalfModule) {
@@ -75,6 +95,10 @@ struct ArtObjectView: View {
         .toolbar(.hidden, for: .tabBar)
     }
 
+    private func normalized(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     private var markVisitedButton: some View {
         Button {
             viewModel.toggleVisited()
@@ -85,9 +109,9 @@ struct ArtObjectView: View {
                 Spacer()
                 Icons.checkmark
                     .renderingMode(.template)
-                    .foregroundColor(.black)
+                    .foregroundColor(Color.appContrastForeground)
             }
-            .foregroundStyle(viewModel.isVisited ? .white : .primary)
+            .foregroundStyle(viewModel.isVisited ? Color.appContrastForeground : Color.appPrimaryText)
             .padding(.horizontal, Metrics.twoAndHalfModule)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
@@ -99,7 +123,7 @@ struct ArtObjectView: View {
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.primary, lineWidth: viewModel.isVisited ? 0 : 1.5)
+                    .stroke(Color.appPrimaryText, lineWidth: viewModel.isVisited ? 0 : 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -116,11 +140,11 @@ struct ArtObjectView: View {
                 Spacer()
                 Icons.camera
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Color.appContrastForeground)
             .padding(.horizontal, Metrics.twoAndHalfModule)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
-            .background(Color.black)
+            .background(Color.appContrastBackground)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)

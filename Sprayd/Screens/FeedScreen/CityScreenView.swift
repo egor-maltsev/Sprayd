@@ -78,7 +78,7 @@ struct CityScreenView: View {
         VStack(alignment: .leading, spacing: Metrics.module) {
             Text(city)
                 .font(.ClimateCrisis22)
-                .foregroundStyle(.black)
+                .foregroundStyle(Color.appPrimaryText)
 
             Text(objectsCountText)
                 .font(.InstrumentRegular13)
@@ -88,8 +88,8 @@ struct CityScreenView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: Layout.cardCornerRadius, style: .continuous)
-                .fill(Color.white.opacity(0.45))
-                .stroke(Color.black.opacity(0.16), lineWidth: 1)
+                .fill(Color.appSurface)
+                .stroke(Color.appPrimaryText.opacity(0.16), lineWidth: 1)
         )
     }
 
@@ -101,7 +101,7 @@ struct CityScreenView: View {
                 VStack(alignment: .leading, spacing: Metrics.module) {
                     Text(item.name)
                         .font(.InstrumentBold20)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.appPrimaryText)
                         .lineLimit(2)
 
                     locationLine(text: cleanedText(item.location) ?? city)
@@ -124,15 +124,15 @@ struct CityScreenView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: Layout.cardCornerRadius, style: .continuous)
-                .fill(Color.white.opacity(0.45))
-                .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                .fill(Color.appSurface)
+                .stroke(Color.appPrimaryText.opacity(0.18), lineWidth: 1)
         )
     }
 
     private func artworkImage(for item: ArtItem) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: Layout.imageCornerRadius, style: .continuous)
-                .fill(Color.gray.opacity(0.16))
+                .fill(Color.appMutedFill)
 
             if let imageURL = item.primaryImageURL {
                 AsyncImage(url: imageURL) { phase in
@@ -168,7 +168,7 @@ struct CityScreenView: View {
     private func personLine(label: String, value: String) -> some View {
         HStack(spacing: Metrics.module) {
             Circle()
-                .fill(Color.gray.opacity(0.45))
+                .fill(Color.appMutedFill)
                 .frame(width: 22, height: 22)
                 .overlay {
                     Icons.person
@@ -205,7 +205,7 @@ struct CityScreenView: View {
         VStack(alignment: .leading, spacing: Metrics.module) {
             Text("No objects yet")
                 .font(.InstrumentBold20)
-                .foregroundStyle(.black)
+                .foregroundStyle(Color.appPrimaryText)
 
             Text("Works from this city will appear here as soon as they are added to the feed.")
                 .font(.InstrumentRegular13)
@@ -216,14 +216,14 @@ struct CityScreenView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: Layout.cardCornerRadius, style: .continuous)
-                .fill(Color.white.opacity(0.45))
-                .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                .fill(Color.appSurface)
+                .stroke(Color.appPrimaryText.opacity(0.18), lineWidth: 1)
         )
     }
 
     private var placeholderArtworkImage: some View {
         Icons.photo
-            .foregroundStyle(.gray.opacity(0.7))
+            .foregroundStyle(Color.secondaryColor.opacity(0.8))
             .font(.system(size: 34, weight: .medium))
     }
 
@@ -296,7 +296,6 @@ private let cityPreviewContainer: ModelContainer = {
                 createdAt: .now,
                 state: .new,
                 category: "Mural",
-                likesCount: 18
             ),
             ArtItem(
                 name: "Paper Gesture",
@@ -308,7 +307,6 @@ private let cityPreviewContainer: ModelContainer = {
                 createdAt: .now.addingTimeInterval(-86_400),
                 state: .new,
                 category: "Mural",
-                likesCount: 24
             ),
             ArtItem(
                 name: "Signal Grid",
@@ -320,7 +318,6 @@ private let cityPreviewContainer: ModelContainer = {
                 createdAt: .now.addingTimeInterval(-172_800),
                 state: .new,
                 category: "Street Art",
-                likesCount: 7
             )
         ]
 
