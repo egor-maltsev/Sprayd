@@ -36,6 +36,14 @@ final class ProfileCoordinator: ObservableObject {
     func openAddArt() {
         path.append(.addArt)
     }
+
+    func openSignIn() {
+        path.append(.signIn)
+    }
+
+    func openCreateAccount() {
+        path.append(.createAccount)
+    }
     
     func pop() {
         guard !path.isEmpty else { return }
@@ -48,16 +56,31 @@ final class ProfileCoordinator: ObservableObject {
     
     @ViewBuilder
     func makeRootView() -> some View {
-        MyProfileAssembly(
-            authorizationService: authorizationService,
-            userService: userService,
-            tokenStore: tokenStore,
-            imageLoaderService: imageLoaderService)
-        .build(
-            onAddArt: { [weak self] in
-                self?.openAddArt()
-            }
-        )
+        if tokenStore.hasToken() {
+            MyProfileAssembly(
+                authorizationService: authorizationService,
+                userService: userService,
+                tokenStore: tokenStore,
+                imageLoaderService: imageLoaderService
+            )
+            .build(
+                onAddArt: { [weak self] in
+                    self?.openAddArt()
+                }
+            )
+        } else {
+            ChooseAccountAssembly().build(
+                onSignInTapped: { [weak self] in
+                    self?.openSignIn()
+                },
+                onCreateAccountTapped: { [weak self] in
+                    self?.openCreateAccount()
+                },
+                onProceedWithoutAccountTapped: { [weak self] in
+                    self?.popToRoot()
+                }
+            )
+        }
     }
     
     @ViewBuilder
@@ -71,6 +94,22 @@ final class ProfileCoordinator: ObservableObject {
                     repository: artAdditionRepository
                 )
             )
+        case .signIn:
+            SignInAssembly(
+                authorizationService: authorizationService,
+                tokenStore: tokenStore
+            )
+            .build(onLoginSuccess: { [weak self] in
+                self?.popToRoot()
+            })
+        case .createAccount:
+            CreateAccountAssembly(
+                authorizationService: authorizationService,
+                tokenStore: tokenStore
+            )
+            .build(onRegistrationSuccess: { [weak self] in
+                self?.popToRoot()
+            })
         }
     }
 }

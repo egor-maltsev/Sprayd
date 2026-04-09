@@ -9,4 +9,6 @@ import Foundation
 
 enum ProfileRoute: Hashable {
     case addArt
+    case signIn
+    case createAccount
 }
