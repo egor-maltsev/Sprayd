@@ -21,7 +21,7 @@ struct AppCoordinatorView: View {
             wrappedValue: AppCoordinator(compositionRoot: compositionRoot)
         )
     }
-    
+
     var body: some View {
         TabView(selection: $coordinator.selectedTab) {
             MapCoordinatorView(coordinator: coordinator.mapCoordinator)
@@ -29,13 +29,13 @@ struct AppCoordinatorView: View {
                     Icons.map
                 }
                 .tag(AppTab.map)
-            
+
             FeedCoordinatorView(coordinator: coordinator.feedCoordinator)
                 .tabItem {
                     Icons.home
                 }
                 .tag(AppTab.feed)
-            
+
             ProfileCoordinatorView(coordinator: coordinator.profileCoordinator)
                 .tabItem {
                     Icons.profileIcon
