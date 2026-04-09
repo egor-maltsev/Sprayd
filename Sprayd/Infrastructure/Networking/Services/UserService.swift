@@ -28,21 +28,12 @@ final class UserService {
         let liked: [UUID]
     }
 
-    private struct UpdateUsernameRequest: Codable {
-        let username: String
-    }
-
-    private struct UpdateBioRequest: Codable {
-        let bio: String
-    }
-
-    private struct UpdateAvatarRequest: Codable {
-        let img: Data
-    }
-
-    private struct ChangePasswordRequest: Codable {
-        let currentPassword: String
-        let newPassword: String
+    private struct UpdateUserRequest: Codable {
+        let username: String?
+        let bio: String?
+        let avatar: Data?
+        let currentPassword: String?
+        let newPassword: String?
     }
 
     // MARK: - API
@@ -64,56 +55,63 @@ final class UserService {
         )
     }
 
-    /// PATCH /users/me/username (Bearer token)
+    /// PATCH /users/me (Bearer token)
     func changeUsername(token: String, username: String) async throws -> UserProfileResponse {
-        let body = try JSONEncoder().encode(UpdateUsernameRequest(username: username))
-        return try await sender.send(
-            endpoint: "/users/me/username",
-            method: .patch,
-            headers: authorizedJSONHeaders(token: token),
-            body: body
+        try await patchCurrentUser(
+            token: token,
+            request: UpdateUserRequest(
+                username: username,
+                bio: nil,
+                avatar: nil,
+                currentPassword: nil,
+                newPassword: nil
+            )
         )
     }
 
-    /// PATCH /users/me/bio (Bearer token)
+    /// PATCH /users/me (Bearer token)
     func changeBio(token: String, bio: String) async throws -> UserProfileResponse {
-        let body = try JSONEncoder().encode(UpdateBioRequest(bio: bio))
-        return try await sender.send(
-            endpoint: "/users/me/bio",
-            method: .patch,
-            headers: authorizedJSONHeaders(token: token),
-            body: body
+        try await patchCurrentUser(
+            token: token,
+            request: UpdateUserRequest(
+                username: nil,
+                bio: bio,
+                avatar: nil,
+                currentPassword: nil,
+                newPassword: nil
+            )
         )
     }
 
-    /// POST /users/me/avatar (Bearer token)
+    /// PATCH /users/me (Bearer token)
     func changeAvatar(token: String, imageData: Data) async throws -> UserProfileResponse {
-        let body = try JSONEncoder().encode(UpdateAvatarRequest(img: imageData))
-        return try await sender.send(
-            endpoint: "/users/me/avatar",
-            method: .post,
-            headers: authorizedJSONHeaders(token: token),
-            body: body
+        try await patchCurrentUser(
+            token: token,
+            request: UpdateUserRequest(
+                username: nil,
+                bio: nil,
+                avatar: imageData,
+                currentPassword: nil,
+                newPassword: nil
+            )
         )
     }
 
-    /// PATCH /users/me/password (Bearer token)
+    /// PATCH /users/me (Bearer token)
     func changePassword(
         token: String,
         currentPassword: String,
         newPassword: String
-    ) async throws {
-        let body = try JSONEncoder().encode(
-            ChangePasswordRequest(
+    ) async throws -> UserProfileResponse {
+        try await patchCurrentUser(
+            token: token,
+            request: UpdateUserRequest(
+                username: nil,
+                bio: nil,
+                avatar: nil,
                 currentPassword: currentPassword,
                 newPassword: newPassword
             )
-        )
-        try await sender.sendEmpty(
-            endpoint: "/users/me/password",
-            method: .patch,
-            headers: authorizedJSONHeaders(token: token),
-            body: body
         )
     }
 
@@ -131,5 +129,18 @@ final class UserService {
             "Authorization": "Bearer \(token)",
             "Content-Type": "application/json"
         ]
+    }
+
+    private func patchCurrentUser(
+        token: String,
+        request: UpdateUserRequest
+    ) async throws -> UserProfileResponse {
+        let body = try JSONEncoder().encode(request)
+        return try await sender.send(
+            endpoint: "/users/me",
+            method: .patch,
+            headers: authorizedJSONHeaders(token: token),
+            body: body
+        )
     }
 }
