@@ -48,9 +48,12 @@ struct FeaturedView: View {
         var seen = Set<String>()
 
         return items.compactMap { item in
-            let city = item.location.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !city.isEmpty else { return nil }
-            guard seen.insert(city).inserted else { return nil }
+            guard let city = item.cityName else { return nil }
+            let normalizedCity = city.folding(
+                options: [.caseInsensitive, .diacriticInsensitive],
+                locale: .current
+            )
+            guard seen.insert(normalizedCity).inserted else { return nil }
             return city
         }
     }
@@ -82,7 +85,12 @@ struct FeaturedView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: Metrics.oneAndHalfModule) {
                                     ForEach(cities, id: \.self) { city in
-                                        cityCard(title: city)
+                                        NavigationLink {
+                                            CityScreenView(city: city)
+                                        } label: {
+                                            cityCard(title: city)
+                                        }
+                                        .buttonStyle(.plain)
                                     }
                                 }
                                 .padding(.trailing, Metrics.module)
