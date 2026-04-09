@@ -20,7 +20,7 @@ final class ArtItem {
     var createdAt: Date
     var stateRawValue: String
     var category: String
-    var likesCount: Int
+    var isFavorite: Bool
     var latitude: Double
     var longitude: Double
 
@@ -35,7 +35,7 @@ final class ArtItem {
         createdAt: Date = .now,
         state: ArtState = .new,
         category: String = "",
-        likesCount: Int = 0,
+        isFavorite: Bool = false,
         latitude: Double = 0,
         longitude: Double = 0
     ) {
@@ -49,7 +49,7 @@ final class ArtItem {
         self.createdAt = createdAt
         self.stateRawValue = state.rawValue
         self.category = category
-        self.likesCount = likesCount
+        self.isFavorite = isFavorite
         self.latitude = latitude
         self.longitude = longitude
     }

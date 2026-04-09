@@ -12,6 +12,7 @@ struct UIKitMapView: UIViewRepresentable {
     let region: MKCoordinateRegion
     let items: [ArtItem]
     let isItemSheetPresented: Bool
+    let onRegionDidChange: (MKCoordinateRegion) -> Void
     let onSelectItem: (ArtItem) -> Void
 
     @Environment(\.imageLoaderService) private var imageLoaderService
@@ -35,12 +36,16 @@ struct UIKitMapView: UIViewRepresentable {
     func updateUIView(_ uiView: MKMapView, context: Context) {
         context.coordinator.imageLoaderService = imageLoaderService
         context.coordinator.onSelectItem = onSelectItem
+        context.coordinator.onRegionDidChange = onRegionDidChange
         updateAnnotations(for: uiView)
         updateSelection(for: uiView)
     }
 
     func makeCoordinator() -> UIKitMapCoordinator {
-        UIKitMapCoordinator(onSelectItem: onSelectItem)
+        UIKitMapCoordinator(
+            onRegionDidChange: onRegionDidChange,
+            onSelectItem: onSelectItem
+        )
     }
 
     private func updateAnnotations(for mapView: MKMapView) {
@@ -93,9 +98,14 @@ struct UIKitMapView: UIViewRepresentable {
 // Так как используется только в MapView объявляем здесь
 final class UIKitMapCoordinator: NSObject, MKMapViewDelegate {
     var imageLoaderService: ImageLoaderService?
+    var onRegionDidChange: (MKCoordinateRegion) -> Void
     var onSelectItem: (ArtItem) -> Void
 
-    init(onSelectItem: @escaping (ArtItem) -> Void) {
+    init(
+        onRegionDidChange: @escaping (MKCoordinateRegion) -> Void,
+        onSelectItem: @escaping (ArtItem) -> Void
+    ) {
+        self.onRegionDidChange = onRegionDidChange
         self.onSelectItem = onSelectItem
     }
 
@@ -153,5 +163,9 @@ final class UIKitMapCoordinator: NSObject, MKMapViewDelegate {
 
         mapView.setCenter(clusterAnnotation.coordinate, animated: true)
         onSelectItem(firstItem)
+    }
+
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        onRegionDidChange(mapView.region)
     }
 }

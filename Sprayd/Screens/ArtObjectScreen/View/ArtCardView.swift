@@ -81,17 +81,16 @@ struct ArtCardView: View {
 
             Spacer(minLength: Metrics.oneAndHalfModule)
 
-            HStack(spacing: Metrics.module) {
-                Text(String(viewModel.likesCount))
-                    .font(Font.InstrumentMedium13)
-                    .foregroundStyle(Color.appPrimaryText)
-
-                if viewModel.isLiked {
+            Button {
+                viewModel.toggleFavorite()
+            } label: {
+                if viewModel.isFavorite {
                     Icons.filledHeart
                 } else {
                     Icons.heart
                 }
             }
+            .buttonStyle(.plain)
         }
     }
 

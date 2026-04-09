@@ -23,12 +23,18 @@ struct MainMapView: View {
             region: viewModel.region,
             items: viewModel.items,
             isItemSheetPresented: selectedItem != nil,
+            onRegionDidChange: { region in
+                viewModel.updateRegion(region)
+            },
             onSelectItem: { item in
                 selectedDetent = .fraction(0.5)
                 selectedItem = item
             }
         )
         .ignoresSafeArea()
+        .task {
+            await viewModel.loadInitialItemsIfNeeded()
+        }
         .sheet(
             isPresented: Binding(
                 get: { selectedItem != nil },
