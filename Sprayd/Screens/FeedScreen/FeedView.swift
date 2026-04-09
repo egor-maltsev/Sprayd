@@ -22,6 +22,12 @@ struct FeaturedView: View {
         static let discoverGridImageAspectRatio: CGFloat = discoverGridColumnWidth / discoverGridImageHeight
     }
 
+    private let onSelectItem: (ArtItem) -> Void
+
+    init(onSelectItem: @escaping (ArtItem) -> Void = { _ in }) {
+        self.onSelectItem = onSelectItem
+    }
+
     @Environment(\.modelContext) private var modelContext
     @Query(
         sort: [
@@ -70,8 +76,8 @@ struct FeaturedView: View {
                     if let featuredItem {
                         VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                             sectionTitle("Featured")
-                            NavigationLink {
-                                ArtObjectView(item: featuredItem)
+                            Button {
+                                onSelectItem(featuredItem)
                             } label: {
                                 featuredCard(item: featuredItem)
                             }
@@ -103,8 +109,8 @@ struct FeaturedView: View {
                             sectionTitle("Discover")
 
                             if let first = discoverItems.first {
-                                NavigationLink {
-                                    ArtObjectView(item: first)
+                                Button {
+                                    onSelectItem(first)
                                 } label: {
                                     discoverLargeCard(item: first)
                                 }
@@ -114,8 +120,8 @@ struct FeaturedView: View {
 
                             LazyVGrid(columns: gridColumns, spacing: Metrics.doubleModule) {
                                 ForEach(Array(discoverItems.dropFirst().enumerated()), id: \.offset) { _, item in
-                                    NavigationLink {
-                                        ArtObjectView(item: item)
+                                    Button {
+                                        onSelectItem(item)
                                     } label: {
                                         discoverSmallCard(item: item)
                                     }
