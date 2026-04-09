@@ -5,7 +5,7 @@
 //  Created by loxxy on 08.04.2026.
 //
 
-internal import Combine
+import Combine
 import SwiftUI
 import MapKit
 import CoreLocation
