@@ -2,7 +2,7 @@
 //  UserService.swift
 //  Sprayd
 //
-//  Created by Cursor on 09.04.2026.
+//  Created by лизо4ка курунок on 09.04.2026.
 //
 
 import Foundation

@@ -10,8 +10,7 @@ import Foundation
 final class Sender {
     
     private enum Constants {
-        static let baseURL = "http://localhost:8080"
-        static let apiPrefix = "/api/v1"
+        static let baseURL = "http://localhost:8080/api/v1/"
     }
     
     private let baseURL: String
@@ -27,7 +26,7 @@ final class Sender {
         headers: [String: String]? = nil,
         body: Data? = nil
     ) async throws -> T {
-        guard let url = URL(string: "\(baseURL)\(normalizedEndpoint(endpoint))") else {
+        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
             throw APIError.invalidURL
         }
         var request = URLRequest(url: url)
@@ -50,7 +49,7 @@ final class Sender {
         headers: [String: String]? = nil,
         body: Data? = nil
     ) async throws {
-        guard let url = URL(string: "\(baseURL)\(normalizedEndpoint(endpoint))") else {
+        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
             throw APIError.invalidURL
         }
         var request = URLRequest(url: url)
@@ -149,10 +148,5 @@ final class Sender {
         } catch {
             throw APIError.decodingError(error)
         }
-    }
-
-    private func normalizedEndpoint(_ endpoint: String) -> String {
-        let normalizedPath = endpoint.hasPrefix("/") ? endpoint : "/\(endpoint)"
-        return "\(Constants.apiPrefix)\(normalizedPath)"
     }
 }
