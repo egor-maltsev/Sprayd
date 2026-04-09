@@ -42,7 +42,7 @@ final class ArtSyncService {
             syncImages(for: remoteItem, localItem: localItem)
         }
 
-        for localItem in localItems where !remoteIDs.contains(localItem.remoteID) {
+        for localItem in localItems where !remoteIDs.contains(localItem.id) {
             modelContext.delete(localItem)
         }
 
@@ -51,7 +51,7 @@ final class ArtSyncService {
 
     private func makeLocalItem(from remote: RemoteArtItemResponse) -> ArtItem {
         let item = ArtItem(
-            remoteID: remote.id,
+            id: remote.id,
             name: remote.name,
             itemDescription: remote.itemDescription,
             images: [],
@@ -87,20 +87,20 @@ final class ArtSyncService {
 
         let remoteIDs = Set(imageURLs.map(stableUUID(for:)))
 
-        let imagesToDelete = localItem.images.filter { !remoteIDs.contains($0.remoteID) }
+        let imagesToDelete = localItem.images.filter { !remoteIDs.contains($0.id) }
         for image in imagesToDelete {
             modelContext.delete(image)
         }
 
-        localItem.images.removeAll { !remoteIDs.contains($0.remoteID) }
+        localItem.images.removeAll { !remoteIDs.contains($0.id) }
 
         for urlString in imageURLs {
             let remoteID = stableUUID(for: urlString)
 
-            if let existingImage = localItem.images.first(where: { $0.remoteID == remoteID }) {
+            if let existingImage = localItem.images.first(where: { $0.id == remoteID }) {
                 existingImage.urlString = urlString
             } else {
-                let image = ArtImage(remoteID: remoteID, urlString: urlString)
+                let image = ArtImage(id: remoteID, urlString: urlString)
                 modelContext.insert(image)
                 localItem.images.append(image)
             }
@@ -125,7 +125,7 @@ final class ArtSyncService {
     private func fetchLocalItem(by remoteID: UUID) throws -> ArtItem? {
         let descriptor = FetchDescriptor<ArtItem>(
             predicate: #Predicate<ArtItem> { item in
-                item.remoteID == remoteID
+                item.id == remoteID
             }
         )
         return try modelContext.fetch(descriptor).first
