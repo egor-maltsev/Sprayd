@@ -17,6 +17,9 @@ struct MainMapAssembly {
             artItemsInBoxService: artItemsInBoxService,
             locationProvider: locationProvider
         )
-        return MainMapView(viewModel: viewModel)
+        return MainMapView(
+            viewModel: viewModel,
+            onSelectItem: onSelectItem
+        )
     }
 }

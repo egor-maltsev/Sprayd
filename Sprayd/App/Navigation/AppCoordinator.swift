@@ -23,7 +23,7 @@ final class AppCoordinator: ObservableObject {
             locationProvider: compositionRoot.locationProvider
         )
         self.feedCoordinator = FeedCoordinator(
-            modelContext: compositionRoot.modelContext
+            artItemsInBoxService: compositionRoot.artItemsInBoxService
         )
         self.profileCoordinator = ProfileCoordinator(
             authorizationService: compositionRoot.authorizationService,
