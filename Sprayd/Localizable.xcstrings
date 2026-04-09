@@ -411,6 +411,9 @@
         }
       }
     },
+    "No objects yet" : {
+
+    },
     "Nothing here yet" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -689,6 +692,9 @@
           }
         }
       }
+    },
+    "Works from this city will appear here as soon as they are added to the feed." : {
+
     }
   },
   "version" : "1.2"
