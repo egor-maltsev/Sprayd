@@ -9,6 +9,13 @@ import SwiftUI
 import SwiftData
 
 struct FeaturedView: View {
+    private struct CityPreview: Identifiable {
+        let title: String
+        let imageURL: URL?
+
+        var id: String { title }
+    }
+
     enum Layout {
         static let referenceFeedWidth: CGFloat = 345
         static let featuredImageHeight: CGFloat = 122
@@ -50,21 +57,38 @@ struct FeaturedView: View {
         Array(items.dropFirst())
     }
 
-    private var cities: [String] {
-        var seen = Set<String>()
+    private var cities: [CityPreview] {
+        var orderedKeys: [String] = []
+        var previewsByKey: [String: CityPreview] = [:]
 
-        return items.compactMap { item in
-            guard let city = item.cityName else { return nil }
-            let normalizedCity = city.folding(
-                options: [.caseInsensitive, .diacriticInsensitive],
-                locale: .current
-            )
-            guard seen.insert(normalizedCity).inserted else { return nil }
-            return city
+        for item in items {
+            guard let city = item.cityName else { continue }
+            let key = normalizedCityKey(city)
+
+            if let existingPreview = previewsByKey[key] {
+                guard existingPreview.imageURL == nil, let imageURL = item.primaryImageURL else { continue }
+
+                previewsByKey[key] = CityPreview(
+                    title: existingPreview.title,
+                    imageURL: imageURL
+                )
+            } else {
+                previewsByKey[key] = CityPreview(
+                    title: city,
+                    imageURL: item.primaryImageURL
+                )
+                orderedKeys.append(key)
+            }
         }
+
+        return orderedKeys.compactMap { previewsByKey[$0] }
     }
 
     var body: some View {
+        let featuredItem = featuredItem
+        let cityPreviews = cities
+        let discoverItems = discoverItems
+
         ZStack {
             Color.appBackground
                 .ignoresSafeArea()
@@ -84,16 +108,19 @@ struct FeaturedView: View {
                         }
                     }
 
-                    if !cities.isEmpty {
+                    if !cityPreviews.isEmpty {
                         VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                             sectionTitle("Cities")
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: Metrics.oneAndHalfModule) {
-                                    ForEach(cities, id: \.self) { city in
+                                LazyHStack(spacing: Metrics.oneAndHalfModule) {
+                                    ForEach(cityPreviews) { city in
                                         NavigationLink {
-                                            CityScreenView(city: city)
+                                            CityScreenView(city: city.title)
                                         } label: {
-                                            cityCard(title: city)
+                                            cityCard(
+                                                title: city.title,
+                                                imageURL: city.imageURL
+                                            )
                                         }
                                         .buttonStyle(.plain)
                                     }
@@ -287,6 +314,12 @@ struct FeaturedView: View {
     private func cleanedText(_ value: String) -> String? {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmedValue.isEmpty ? nil : trimmedValue
+    }
+
+    private func normalizedCityKey(_ value: String) -> String {
+        value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
     }
 }
 
