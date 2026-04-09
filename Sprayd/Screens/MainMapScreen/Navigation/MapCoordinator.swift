@@ -5,18 +5,17 @@
 //  Created by loxxy on 03.04.2026.
 //
 
-import SwiftData
 import SwiftUI
 internal import Combine
 
 final class MapCoordinator: ObservableObject {
     // MARK: - Fields
     @Published var path: [MapRoute] = []
-    private let modelContext: ModelContext
+    private let artItemsInBoxService: ArtItemsInBoxService
 
     // MARK: - Lifecycle
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
+    init(artItemsInBoxService: ArtItemsInBoxService) {
+        self.artItemsInBoxService = artItemsInBoxService
     }
     
     // MARK: - Navigation logic
@@ -32,7 +31,7 @@ final class MapCoordinator: ObservableObject {
     @ViewBuilder
     func makeRootView() -> some View {
         MainMapAssembly(
-            modelContext: modelContext
+            artItemsInBoxService: artItemsInBoxService
         )
         .build()
     }
