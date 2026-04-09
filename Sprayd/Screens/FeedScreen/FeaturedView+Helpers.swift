@@ -32,7 +32,7 @@ extension FeaturedView {
 
                 Spacer()
 
-                likesView(count: item.likesCount)
+                favoriteButton(for: item)
                     .padding(.top, Metrics.module)
             }
         }
@@ -65,14 +65,19 @@ extension FeaturedView {
         .frame(width: 116, alignment: .leading)
     }
 
-    func likesView(count: Int) -> some View {
-        HStack(spacing: Metrics.halfModule) {
-            Text("\(count)")
-                .font(.InstrumentMedium13)
-                .foregroundStyle(Color.appPrimaryText)
+    func favoriteButton(for item: ArtItem) -> some View {
+        @Bindable var item = item
 
-            Icons.heart
+        return Button {
+            item.isFavorite.toggle()
+        } label: {
+            if item.isFavorite {
+                Icons.filledHeart
+            } else {
+                Icons.heart
+            }
         }
+        .buttonStyle(.plain)
     }
 
     var emptyState: some View {

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import SwiftData
 
 struct MyProfileView: View {
     // MARK: - Constants
@@ -21,6 +22,14 @@ struct MyProfileView: View {
     }
     
     // MARK: - Fields
+    @Query(
+        sort: [
+            SortDescriptor(\ArtItem.createdAt, order: .reverse),
+            SortDescriptor(\ArtItem.name)
+        ]
+    )
+    private var allItems: [ArtItem]
+
     @ObservedObject var viewModel: MyProfileViewModel
     let onAddArt: () -> Void
     
@@ -65,6 +74,9 @@ struct MyProfileView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .task(id: favouriteItemIDs) {
+            viewModel.favourites = allItems.filter { $0.isFavorite }
+        }
         .sheet(item: $viewModel.activeImagePickerSource) { source in
             ProfileImagePicker(
                 source: source,
@@ -102,6 +114,12 @@ struct MyProfileView: View {
             .padding(.bottom, Metrics.module)
             .background(Color.appBackground)
         }
+    }
+
+    private var favouriteItemIDs: [UUID] {
+        allItems
+            .filter { $0.isFavorite }
+            .map { $0.id }
     }
     
     // MARK: - Subviews
@@ -231,6 +249,7 @@ struct MyProfileView: View {
         Picker("", selection: $viewModel.selectedOption) {
             Text("Posted").tag(MyProfileViewModel.Option.posted)
             Text("Visited").tag(MyProfileViewModel.Option.visited)
+            Text("Favourites").tag(MyProfileViewModel.Option.favourites)
         }
         .pickerStyle(.segmented)
         .padding(.horizontal)
@@ -238,7 +257,8 @@ struct MyProfileView: View {
     
     private var sectionTitle: some View {
         Text(viewModel.selectedOptionTitle)
-            .frame(maxWidth: 150)
+            .frame(maxWidth: 160)
+            .padding(10)
             .font(.ClimateCrisis20)
     }
     

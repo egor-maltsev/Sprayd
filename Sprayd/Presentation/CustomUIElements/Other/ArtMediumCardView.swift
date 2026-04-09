@@ -17,16 +17,8 @@ struct ArtMediumCardView: View {
         static let placeholderColor = Color.appMutedFill
     }
     
-    // MARK: - Lifecycle
-    init(item: ArtItem) {
-        self.item = item
-        _likesCount = State(initialValue: 0)
-    }
-    
     // MARK: - Fields
-    @State private var isLiked: Bool = false
-    @State private var likesCount: Int
-    private let item: ArtItem
+    let item: ArtItem
     
     // MARK: - Subviews
     private var artworkImage: some View {
@@ -52,31 +44,25 @@ struct ArtMediumCardView: View {
     }
     
     private var titleRow: some View {
-        HStack(alignment: .firstTextBaseline) {
+        @Bindable var item = item
+
+        return HStack(alignment: .firstTextBaseline) {
             Text(item.name)
                 .font(.InstrumentBold20)
                 .foregroundStyle(Color.appPrimaryText)
             
             Spacer(minLength: Metrics.oneAndHalfModule)
             
-            HStack(spacing: Metrics.module) {
-                Text(String(likesCount))
-                    .font(.InstrumentMedium13)
-                    .foregroundStyle(Color.appPrimaryText)
-                
-                if isLiked {
+            Button {
+                item.isFavorite.toggle()
+            } label: {
+                if item.isFavorite {
                     Icons.filledHeart
-                        .onTapGesture {
-                            toggleLike()
-                        }
                 } else {
                     Icons.heart
-                        .onTapGesture {
-                            toggleLike()
-                        }
                 }
-                
             }
+            .buttonStyle(.plain)
         }
     }
     
@@ -151,19 +137,4 @@ struct ArtMediumCardView: View {
         }
     }
     
-    // MARK: - Display logic
-    private func toggleLike() {
-        isLiked.toggle()
-        
-        if (isLiked) {
-            likesCount += 1
-        } else {
-            likesCount -= 1
-        }
-    }
 }
-
-//
-//#Preview {
-//    ArtMediumCardView()
-//}

@@ -61,7 +61,6 @@ final class ArtSyncService {
             createdAt: .now,
             state: remote.state,
             category: remote.category,
-            likesCount: 0,
             latitude: remote.latitude,
             longitude: remote.longitude
         )

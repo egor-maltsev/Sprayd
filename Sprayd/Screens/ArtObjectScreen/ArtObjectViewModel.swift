@@ -21,9 +21,9 @@ final class ArtObjectViewModel {
     // MARK: - UI state
     var selectedPhotoIndex: Int = 0
     var isPhotoPreviewPresented: Bool = false
-    var isLiked: Bool = false
-    var likesCount: Int = 0
+    var isFavorite: Bool = false
     var isVisited: Bool = false
+    private var item: ArtItem?
 
     // MARK: - Init
     init(
@@ -44,6 +44,7 @@ final class ArtObjectViewModel {
         self.category = category
         self.postedBy = postedBy
         self.dateText = dateText
+        self.item = nil
     }
 
     convenience init(item: ArtItem) {
@@ -66,14 +67,15 @@ final class ArtObjectViewModel {
             dateText: item.createdAt.formatted(date: .numeric, time: .omitted)
         )
 
-        likesCount = item.likesCount
+        self.item = item
+        isFavorite = item.isFavorite
     }
 
     // MARK: - Actions
 
-    func toggleLike() {
-        isLiked.toggle()
-        likesCount += isLiked ? 1 : -1
+    func toggleFavorite() {
+        isFavorite.toggle()
+        item?.isFavorite = isFavorite
     }
 
     func toggleVisited() {
