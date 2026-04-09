@@ -60,6 +60,7 @@ struct ArtObjectView: View {
                 .padding(.bottom, Metrics.doubleModule)
             }
         }
+        .accessibilityIdentifier("artObject.root")
         .navigationDestination(isPresented: $viewModel.isPhotoPreviewPresented) {
             PhotoView(
                 selectedPhotoIndex: $viewModel.selectedPhotoIndex,

@@ -22,6 +22,8 @@ extension FeaturedView {
             VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
                 sectionTitle("Featured")
                 featuredCard(item: featuredItem)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("feed.featuredCard")
                     .contentShape(Rectangle())
                     .onTapGesture {
                         onSelectItem(featuredItem)
@@ -57,6 +59,8 @@ extension FeaturedView {
 
                 if let first = discoverItems.first {
                     discoverLargeCard(item: first)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityIdentifier("feed.discoverHeroCard")
                         .contentShape(Rectangle())
                         .onTapGesture {
                             onSelectItem(first)

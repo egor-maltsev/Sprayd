@@ -38,6 +38,7 @@ struct MainMapView: View {
         )
         .ignoresSafeArea()
         .task {
+            guard !AppTestingConfiguration.current.shouldDisableMapLoading else { return }
             await viewModel.loadInitialItemsIfNeeded()
         }
         .sheet(
