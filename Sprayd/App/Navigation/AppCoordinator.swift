@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-internal import Combine
+import Combine
 
 final class AppCoordinator: ObservableObject {    
     // MARK: - Fields

@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 import Photos
 import UIKit
-internal import Combine
+import Combine
 
 final class MyProfileViewModel: ObservableObject {
     enum ProfileImageSource: String, Identifiable {

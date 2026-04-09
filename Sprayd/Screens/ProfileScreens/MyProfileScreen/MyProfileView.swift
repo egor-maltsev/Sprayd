@@ -20,6 +20,11 @@ struct MyProfileView: View {
         static let editableFieldMaxWidth: CGFloat = 220
         static let profileInfoRowWidth: CGFloat = 260
     }
+
+    private enum Field: Hashable {
+        case username
+        case bio
+    }
     
     // MARK: - Fields
     @Query(
@@ -32,6 +37,7 @@ struct MyProfileView: View {
 
     @ObservedObject var viewModel: MyProfileViewModel
     let onAddArt: () -> Void
+    @FocusState private var focusedField: Field?
     
     // MARK: - Lifecycle
     init(
@@ -71,6 +77,10 @@ struct MyProfileView: View {
                     itemsView
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                focusedField = nil
             }
         }
         .toolbar(.hidden, for: .navigationBar)
@@ -183,6 +193,7 @@ struct MyProfileView: View {
                             .font(.ClimateCrisis22)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: Const.editableFieldMaxWidth)
+                            .focused($focusedField, equals: .username)
                     }
                     
                     HStack {
@@ -191,8 +202,10 @@ struct MyProfileView: View {
                         Button {
                             if (viewModel.isEditingUsername) {
                                 viewModel.saveUsername()
+                                focusedField = nil
                             } else {
                                 viewModel.enterUsernameEditingMode()
+                                focusedField = .username
                             }
                         } label: {
                             if (viewModel.isEditingUsername) {
@@ -216,6 +229,7 @@ struct MyProfileView: View {
                             .font(.InstrumentMedium13)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: Const.editableFieldMaxWidth)
+                            .focused($focusedField, equals: .bio)
                     }
                     
                     HStack {
@@ -224,8 +238,10 @@ struct MyProfileView: View {
                         Button {
                             if (viewModel.isEditingBio) {
                                 viewModel.saveBio()
+                                focusedField = nil
                             } else {
                                 viewModel.enterBioEditingMode()
+                                focusedField = .bio
                             }
                         } label: {
                             if (viewModel.isEditingBio) {
