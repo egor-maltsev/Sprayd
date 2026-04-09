@@ -12,7 +12,7 @@ struct MainMapAssembly {
     let artItemsInBoxService: ArtItemsInBoxService
     let locationProvider: LocationProvider
 
-    func build() -> some View {
+    func build(onSelectItem: @escaping (ArtItem) -> Void = { _ in }) -> some View {
         let viewModel = MainMapViewModel(
             artItemsInBoxService: artItemsInBoxService,
             locationProvider: locationProvider
