@@ -13,14 +13,17 @@ final class ProfileCoordinator: ObservableObject {
     @Published var path: [ProfileRoute] = []
 
     private let authorizationService: AuthorizationService
+    private let userService: UserService
     private let tokenStore: SessionTokenStoring
 
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
+        userService: UserService,
         tokenStore: SessionTokenStoring
     ) {
         self.authorizationService = authorizationService
+        self.userService = userService
         self.tokenStore = tokenStore
     }
 
@@ -46,6 +49,7 @@ final class ProfileCoordinator: ObservableObject {
             },
             viewModel: MyProfileViewModel(
                 authorizationService: authorizationService,
+                userService: userService,
                 tokenStore: tokenStore
             )
         )

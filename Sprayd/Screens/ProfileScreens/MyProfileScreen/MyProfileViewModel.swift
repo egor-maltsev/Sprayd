@@ -4,6 +4,7 @@ import Photos
 import UIKit
 internal import Combine
 
+@MainActor
 final class MyProfileViewModel: ObservableObject {
     enum ProfileImageSource: String, Identifiable {
         case photoLibrary
@@ -41,9 +42,12 @@ final class MyProfileViewModel: ObservableObject {
     @Published var shouldOfferSettingsRedirect: Bool = false
     @Published var isEditingUsername: Bool = false
     @Published var isEditingBio: Bool = false
+    @Published var isProfileSyncInProgress: Bool = false
 
     private let authorizationService: AuthorizationService
+    private let userService: UserService
     private let tokenStore: SessionTokenStoring
+    private var hasLoadedProfile: Bool = false
 
     var selectedOptionTitle: String {
         selectedOption.rawValue
@@ -60,7 +64,8 @@ final class MyProfileViewModel: ObservableObject {
     // MARK: - Lifecycle
     init(
         authorizationService: AuthorizationService,
-        tokenStore: SessionTokenStoring = SessionTokenStore(),
+        userService: UserService,
+        tokenStore: SessionTokenStoring? = nil,
         selectedOption: Option = .posted,
         username: String = "Username",
         bio: String = "Description",
@@ -68,7 +73,8 @@ final class MyProfileViewModel: ObservableObject {
         visited: [ArtItem] = [ArtItem(name: "ArtWork3", author: "Author")]
     ) {
         self.authorizationService = authorizationService
-        self.tokenStore = tokenStore
+        self.userService = userService
+        self.tokenStore = tokenStore ?? SessionTokenStore()
         self.selectedOption = selectedOption
         self.username = username
         self.bio = bio
@@ -81,8 +87,15 @@ final class MyProfileViewModel: ObservableObject {
         selectedOption = option
     }
 
+    func onAppear() {
+        guard !hasLoadedProfile else { return }
+        hasLoadedProfile = true
+        Task {
+            await loadCurrentUserProfile()
+        }
+    }
+
     // MARK: - Logout
-    @MainActor
     func logout() {
         guard !isLoggingOut else { return }
         isLoggingOut = true
@@ -99,7 +112,6 @@ final class MyProfileViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     private func clearSession() {
         UserDefaults.standard.removeObject(forKey: "userId")
         UserDefaults.standard.removeObject(forKey: "userEmail")
@@ -117,8 +129,37 @@ final class MyProfileViewModel: ObservableObject {
     }
 
     func saveUsername() {
-        username = draftUsername
-        isEditingUsername.toggle()
+        let newUsername = draftUsername.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !newUsername.isEmpty else {
+            presentPermissionAlert(
+                message: "Username can not be empty.",
+                offerSettingsRedirect: false
+            )
+            return
+        }
+
+        guard newUsername != username else {
+            isEditingUsername = false
+            return
+        }
+
+        Task {
+            do {
+                isProfileSyncInProgress = true
+                let token = try requireToken()
+                let profile = try await userService.changeUsername(token: token, username: newUsername)
+                applyProfile(profile)
+                isEditingUsername = false
+            } catch let error as APIErrorResponse {
+                presentPermissionAlert(message: error.reason, offerSettingsRedirect: false)
+            } catch {
+                presentPermissionAlert(
+                    message: "Could not update username. Please try again.",
+                    offerSettingsRedirect: false
+                )
+            }
+            isProfileSyncInProgress = false
+        }
     }
 
     func enterBioEditingMode() {
@@ -127,8 +168,29 @@ final class MyProfileViewModel: ObservableObject {
     }
 
     func saveBio() {
-        bio = draftBio
-        isEditingBio.toggle()
+        let newBio = draftBio.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard newBio != bio else {
+            isEditingBio = false
+            return
+        }
+
+        Task {
+            do {
+                isProfileSyncInProgress = true
+                let token = try requireToken()
+                let profile = try await userService.changeBio(token: token, bio: newBio)
+                applyProfile(profile)
+                isEditingBio = false
+            } catch let error as APIErrorResponse {
+                presentPermissionAlert(message: error.reason, offerSettingsRedirect: false)
+            } catch {
+                presentPermissionAlert(
+                    message: "Could not update bio. Please try again.",
+                    offerSettingsRedirect: false
+                )
+            }
+            isProfileSyncInProgress = false
+        }
     }
 
     // MARK: - Profile image flow
@@ -220,6 +282,26 @@ final class MyProfileViewModel: ObservableObject {
 
     func updateProfileImage(_ image: UIImage) {
         profileImage = image
+
+        Task {
+            do {
+                isProfileSyncInProgress = true
+                let token = try requireToken()
+                guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                    throw APIError.invalidRequest
+                }
+                let profile = try await userService.changeAvatar(token: token, imageData: imageData)
+                applyProfile(profile)
+            } catch let error as APIErrorResponse {
+                presentPermissionAlert(message: error.reason, offerSettingsRedirect: false)
+            } catch {
+                presentPermissionAlert(
+                    message: "Could not update profile image. Please try again.",
+                    offerSettingsRedirect: false
+                )
+            }
+            isProfileSyncInProgress = false
+        }
     }
 
     func dismissImagePicker() {
@@ -232,9 +314,84 @@ final class MyProfileViewModel: ObservableObject {
         shouldOfferSettingsRedirect = false
     }
 
+    func openAppSettings() {
+        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(settingsURL)
+        dismissPermissionAlert()
+    }
+
     private func presentPermissionAlert(message: String, offerSettingsRedirect: Bool) {
         permissionAlertMessage = message
         shouldOfferSettingsRedirect = offerSettingsRedirect
         isPermissionAlertPresented = true
+    }
+
+    private func loadCurrentUserProfile() async {
+        do {
+            isProfileSyncInProgress = true
+            let profile: UserService.UserProfileResponse
+            if let token = tokenStore.token(), !token.isEmpty {
+                profile = try await userService.getCurrentUser(token: token)
+            } else if let userId = currentUserID {
+                profile = try await userService.getUser(id: userId)
+            } else {
+                isProfileSyncInProgress = false
+                return
+            }
+            applyProfile(profile)
+        } catch {
+            // Ignore loading errors silently on launch to keep screen usable offline.
+        }
+
+        isProfileSyncInProgress = false
+    }
+
+    private func applyProfile(_ profile: UserService.UserProfileResponse) {
+        username = profile.username
+        bio = profile.bio
+        if let id = profile.id {
+            UserDefaults.standard.set(id.uuidString, forKey: "userId")
+        }
+        UserDefaults.standard.set(profile.email, forKey: "userEmail")
+
+        if let avatarURL = profile.avatar {
+            Task {
+                await loadAvatarImage(from: avatarURL)
+            }
+        } else {
+            profileImage = nil
+        }
+    }
+
+    private func loadAvatarImage(from rawURL: String) async {
+        guard let url = URL(string: rawURL) else { return }
+
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard
+                let httpResponse = response as? HTTPURLResponse,
+                (200...299).contains(httpResponse.statusCode),
+                let image = UIImage(data: data)
+            else {
+                return
+            }
+            profileImage = image
+        } catch {
+            // Keep default avatar if image can not be loaded.
+        }
+    }
+
+    private var currentUserID: UUID? {
+        guard let storedID = UserDefaults.standard.string(forKey: "userId") else {
+            return nil
+        }
+        return UUID(uuidString: storedID)
+    }
+
+    private func requireToken() throws -> String {
+        guard let token = tokenStore.token(), !token.isEmpty else {
+            throw APIError.invalidRequest
+        }
+        return token
     }
 }

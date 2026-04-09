@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct MyProfileView: View {
     // MARK: - Constants
@@ -80,9 +79,7 @@ struct MyProfileView: View {
         .alert("Access Needed", isPresented: $viewModel.isPermissionAlertPresented) {
             if viewModel.shouldOfferSettingsRedirect {
                 Button("Settings") {
-                    guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
-                    UIApplication.shared.open(settingsURL)
-                    viewModel.dismissPermissionAlert()
+                    viewModel.openAppSettings()
                 }
             }
             
@@ -101,6 +98,9 @@ struct MyProfileView: View {
             .padding(.trailing, Metrics.tripleModule)
             .padding(.bottom, Metrics.module)
             .background(Color.appBackground)
+        }
+        .task {
+            viewModel.onAppear()
         }
     }
     
@@ -281,7 +281,7 @@ struct MyProfileView: View {
                 .shadow(radius: 3)
         }
         .buttonStyle(.plain)
-        .disabled(viewModel.isLoggingOut)
+        .disabled(viewModel.isLoggingOut || viewModel.isProfileSyncInProgress)
         .accessibilityLabel("Log out")
     }
 }

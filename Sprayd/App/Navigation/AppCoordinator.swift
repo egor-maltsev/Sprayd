@@ -24,6 +24,7 @@ final class AppCoordinator: ObservableObject {
         self.feedCoordinator = FeedCoordinator()
         self.profileCoordinator = ProfileCoordinator(
             authorizationService: compositionRoot.authorizationService,
+            userService: compositionRoot.userService,
             tokenStore: compositionRoot.sessionTokenStore
         )
     }
