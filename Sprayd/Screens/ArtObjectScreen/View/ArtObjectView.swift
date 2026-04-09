@@ -85,9 +85,9 @@ struct ArtObjectView: View {
                 Spacer()
                 Icons.checkmark
                     .renderingMode(.template)
-                    .foregroundColor(.black)
+                    .foregroundColor(Color.appContrastForeground)
             }
-            .foregroundStyle(viewModel.isVisited ? .white : .primary)
+            .foregroundStyle(viewModel.isVisited ? Color.appContrastForeground : Color.appPrimaryText)
             .padding(.horizontal, Metrics.twoAndHalfModule)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
@@ -99,7 +99,7 @@ struct ArtObjectView: View {
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.primary, lineWidth: viewModel.isVisited ? 0 : 1.5)
+                    .stroke(Color.appPrimaryText, lineWidth: viewModel.isVisited ? 0 : 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -116,11 +116,11 @@ struct ArtObjectView: View {
                 Spacer()
                 Icons.camera
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Color.appContrastForeground)
             .padding(.horizontal, Metrics.twoAndHalfModule)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
-            .background(Color.black)
+            .background(Color.appContrastBackground)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)
