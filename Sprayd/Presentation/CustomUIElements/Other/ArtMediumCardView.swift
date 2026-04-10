@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ArtMediumCardView: View {
     // MARK: - Constants
@@ -18,6 +19,7 @@ struct ArtMediumCardView: View {
     }
     
     // MARK: - Fields
+    @Environment(\.modelContext) private var modelContext
     let item: ArtItem
     private let onOpenDetails: (() -> Void)?
 
@@ -75,7 +77,7 @@ struct ArtMediumCardView: View {
             Spacer(minLength: Metrics.oneAndHalfModule)
             
             Button {
-                item.isFavorite.toggle()
+                item.toggleFavorite(in: modelContext)
             } label: {
                 if item.isFavorite {
                     Icons.filledHeart

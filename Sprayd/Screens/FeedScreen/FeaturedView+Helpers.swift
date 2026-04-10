@@ -102,7 +102,7 @@ extension FeaturedView {
         @Bindable var item = item
 
         return Button {
-            item.isFavorite.toggle()
+            item.toggleFavorite(in: modelContext)
         } label: {
             if item.isFavorite {
                 Icons.filledHeart
