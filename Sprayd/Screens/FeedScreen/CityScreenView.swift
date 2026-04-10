@@ -16,6 +16,7 @@ struct CityScreenView: View {
     }
 
     private let city: String
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedItem: ArtItem?
 
     @Query(
@@ -190,7 +191,7 @@ struct CityScreenView: View {
         @Bindable var item = item
 
         return Button {
-            item.isFavorite.toggle()
+            item.toggleFavorite(in: modelContext)
         } label: {
             if item.isFavorite {
                 Icons.filledHeart

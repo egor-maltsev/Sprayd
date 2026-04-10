@@ -27,14 +27,6 @@ struct MyProfileView: View {
     }
     
     // MARK: - Fields
-    @Query(
-        sort: [
-            SortDescriptor(\ArtItem.createdAt, order: .reverse),
-            SortDescriptor(\ArtItem.name)
-        ]
-    )
-    private var allItems: [ArtItem]
-
     @ObservedObject var viewModel: MyProfileViewModel
     let onAddArt: () -> Void
     @FocusState private var focusedField: Field?
@@ -84,9 +76,6 @@ struct MyProfileView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
-        .task(id: favouriteItemIDs) {
-            viewModel.favourites = allItems.filter { $0.isFavorite }
-        }
         .sheet(item: $viewModel.activeImagePickerSource) { source in
             ProfileImagePicker(
                 source: source,
@@ -127,12 +116,6 @@ struct MyProfileView: View {
         }
     }
 
-    private var favouriteItemIDs: [UUID] {
-        allItems
-            .filter { $0.isFavorite }
-            .map { $0.id }
-    }
-    
     // MARK: - Subviews
     private var bioView: some View {
         VStack() {
@@ -193,6 +176,8 @@ struct MyProfileView: View {
                         TextField("Username", text: $viewModel.draftUsername)
                             .font(.ClimateCrisis22)
                             .multilineTextAlignment(.center)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled(true)
                             .frame(maxWidth: Const.editableFieldMaxWidth)
                             .focused($focusedField, equals: .username)
                     }
@@ -229,6 +214,8 @@ struct MyProfileView: View {
                         TextField("Bio", text: $viewModel.draftBio)
                             .font(.InstrumentMedium13)
                             .multilineTextAlignment(.center)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled(true)
                             .frame(maxWidth: Const.editableFieldMaxWidth)
                             .focused($focusedField, equals: .bio)
                     }
@@ -290,11 +277,22 @@ struct MyProfileView: View {
     }
     
     private var itemsView: some View {
-        VStack {
-            if let items = viewModel.displayedItems {
-                ForEach(items) { item in
-                    ArtMediumCardView(item: item)
-                }
+        Group {
+            switch viewModel.selectedOption {
+            case .posted:
+                profileItemsList(viewModel.posts)
+            case .visited:
+                profileItemsList(viewModel.visited)
+            case .favourites:
+                FavouriteItemsListView()
+            }
+        }
+    }
+
+    private func profileItemsList(_ items: [ArtItem]) -> some View {
+        LazyVStack(spacing: Metrics.doubleModule) {
+            ForEach(items) { item in
+                ProfileArtItemCardView(item: item)
             }
         }
     }
@@ -320,5 +318,129 @@ struct MyProfileView: View {
         .buttonStyle(.plain)
         .disabled(viewModel.isLoggingOut || viewModel.isProfileSyncInProgress)
         .accessibilityLabel("Log out")
+    }
+}
+
+private struct FavouriteItemsListView: View {
+    @Query private var favouriteItems: [ArtItem]
+
+    init() {
+        _favouriteItems = Query(
+            filter: #Predicate<ArtItem> { $0.isFavorite == true },
+            sort: [
+                SortDescriptor(\ArtItem.createdAt, order: .reverse),
+                SortDescriptor(\ArtItem.name)
+            ]
+        )
+    }
+
+    var body: some View {
+        if favouriteItems.isEmpty {
+            Text("No favourites yet")
+                .font(.InstrumentMedium13)
+                .foregroundStyle(Color.secondaryColor)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, Metrics.module)
+                .padding(.horizontal, Metrics.tripleModule)
+        } else {
+            LazyVStack(spacing: Metrics.doubleModule) {
+                ForEach(favouriteItems) { item in
+                    ProfileArtItemCardView(item: item)
+                }
+            }
+            .padding(.horizontal, Metrics.tripleModule)
+        }
+    }
+}
+
+private struct ProfileArtItemCardView: View {
+    private enum Layout {
+        static let cornerRadius: CGFloat = 24
+        static let imageCornerRadius: CGFloat = 20
+        static let imageHeight: CGFloat = 220
+    }
+
+    @Environment(\.modelContext) private var modelContext
+    let item: ArtItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Metrics.oneAndHalfModule) {
+            artworkImage
+
+            VStack(alignment: .leading, spacing: Metrics.module) {
+                HStack(alignment: .firstTextBaseline, spacing: Metrics.module) {
+                    Text(item.name)
+                        .font(.InstrumentBold20)
+                        .foregroundStyle(Color.appPrimaryText)
+                        .lineLimit(2)
+
+                    Spacer(minLength: Metrics.module)
+
+                    Button {
+                        item.toggleFavorite(in: modelContext)
+                    } label: {
+                        if item.isFavorite {
+                            Icons.filledHeart
+                        } else {
+                            Icons.heart
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                HStack(alignment: .center, spacing: Metrics.halfModule) {
+                    Icons.location
+
+                    Text(item.location)
+                        .font(.InstrumentRegular13)
+                        .foregroundStyle(Color.secondaryColor)
+                        .lineLimit(2)
+
+                    Spacer(minLength: Metrics.module)
+
+                    Text(item.createdAt.formatted(date: .numeric, time: .omitted))
+                        .font(.InstrumentRegular13)
+                        .foregroundStyle(Color.secondaryColor)
+                        .lineLimit(1)
+                }
+
+                Text(item.itemDescription)
+                    .font(.InstrumentRegular13)
+                    .foregroundStyle(Color.secondaryColor)
+                    .lineLimit(4)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(Metrics.oneAndHalfModule)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: Layout.cornerRadius, style: .continuous)
+                .fill(Color.appSurface)
+                .stroke(Color.appPrimaryText.opacity(0.18), lineWidth: 1)
+        )
+    }
+
+    private var artworkImage: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Layout.imageCornerRadius, style: .continuous)
+                .fill(Color.appMutedFill)
+
+            CachedAsyncImage(url: item.primaryImageURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .empty, .failure:
+                    Icons.photo
+                        .font(.system(size: 32, weight: .regular))
+                        .foregroundStyle(Color.secondaryColor)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: Layout.imageHeight)
+        .clipShape(RoundedRectangle(cornerRadius: Layout.imageCornerRadius, style: .continuous))
     }
 }

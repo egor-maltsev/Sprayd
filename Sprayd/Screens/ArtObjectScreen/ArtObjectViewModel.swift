@@ -69,9 +69,18 @@ final class ArtObjectViewModel {
 
     // MARK: - Actions
 
-    func toggleFavorite() {
-        isFavorite.toggle()
-        item?.isFavorite = isFavorite
+    func toggleFavorite(in modelContext: ModelContext) {
+        let updatedValue = !isFavorite
+        isFavorite = updatedValue
+        item?.isFavorite = updatedValue
+
+        do {
+            try modelContext.save()
+        } catch {
+            isFavorite.toggle()
+            item?.isFavorite = isFavorite
+            print("Favorite save error:", error)
+        }
     }
 
     func toggleVisited() {

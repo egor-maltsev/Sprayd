@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import SwiftData
 
 struct ArtCardView: View {
     // MARK: - Constants
@@ -15,6 +16,7 @@ struct ArtCardView: View {
     }
 
     // MARK: - Fields
+    @Environment(\.modelContext) private var modelContext
     var viewModel: ArtObjectViewModel
     let onAuthorTap: () -> Void
     let onPostedByTap: () -> Void
@@ -98,7 +100,7 @@ struct ArtCardView: View {
             Spacer(minLength: Metrics.oneAndHalfModule)
 
             Button {
-                viewModel.toggleFavorite()
+                viewModel.toggleFavorite(in: modelContext)
             } label: {
                 if viewModel.isFavorite {
                     Icons.filledHeart

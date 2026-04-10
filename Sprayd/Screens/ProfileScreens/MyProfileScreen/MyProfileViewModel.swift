@@ -114,6 +114,8 @@ final class MyProfileViewModel: ObservableObject {
         isLoggingOut = true
 
         Task {
+            defer { isLoggingOut = false }
+
             var didFailRemoteLogout = false
             if let token = tokenStore.token(), !token.isEmpty {
                 do {
@@ -128,18 +130,19 @@ final class MyProfileViewModel: ObservableObject {
             if didFailRemoteLogout {
                 showLogoutError = true
             }
-            isLoggingOut = false
         }
     }
 
     private func clearSession() {
         UserDefaults.standard.removeObject(forKey: "userId")
         UserDefaults.standard.removeObject(forKey: "userEmail")
+
         let clearTokenSucceeded = tokenStore.clearToken()
         guard clearTokenSucceeded, !tokenStore.hasToken() else {
             showLogoutError = true
             return
         }
+
         withAnimation(.easeInOut(duration: 0.35)) {
             hasCompletedOnboarding = false
         }
