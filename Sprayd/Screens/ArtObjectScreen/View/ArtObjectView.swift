@@ -117,7 +117,7 @@ struct ArtObjectView: View {
                 Spacer()
                 Icons.checkmark
                     .renderingMode(.template)
-                    .foregroundColor(Color.appContrastForeground)
+                    .foregroundColor(viewModel.isVisited ? Color.appContrastForeground : Color.appPrimaryText)
             }
             .foregroundStyle(viewModel.isVisited ? Color.appContrastForeground : Color.appPrimaryText)
             .padding(.horizontal, Metrics.twoAndHalfModule)
